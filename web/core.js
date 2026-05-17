@@ -1032,22 +1032,92 @@ function parseScalar(raw) {
   if (typeof raw === "number") return raw;
   let text = String(raw).trim().replace(",", ".");
   if (!text) return NaN;
-  const suffix = text.match(/^([-+]?\d+(?:\.\d+)?)([kKmMuUnNpP])$/);
+  const suffix = text.match(/^([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?)([kKmMuUnNpP])$/i);
   if (suffix) {
     const multipliers = { k: 1e3, K: 1e3, M: 1e6, m: 1e-3, u: 1e-6, U: 1e-6, n: 1e-9, N: 1e-9, p: 1e-12, P: 1e-12 };
     return Number(suffix[1]) * multipliers[suffix[2]];
   }
-  if (/^[-+]?\d+(?:\.\d+)?\/[-+]?\d+(?:\.\d+)?$/.test(text)) {
-    const [num, den] = text.split("/").map(Number);
-    return den === 0 ? NaN : num / den;
-  }
   if (!/^[0-9eE+\-*/().\s]+$/.test(text)) return NaN;
   try {
-    const value = Function(`"use strict"; return (${text});`)();
+    const value = evaluateNumericExpression(text);
     return Number.isFinite(value) ? value : NaN;
   } catch {
     return NaN;
   }
+}
+
+function evaluateNumericExpression(text) {
+  const parser = {
+    index: 0,
+    input: text,
+    peek() {
+      this.skipWhitespace();
+      return this.input[this.index];
+    },
+    consume(token) {
+      this.skipWhitespace();
+      if (this.input.startsWith(token, this.index)) {
+        this.index += token.length;
+        return true;
+      }
+      return false;
+    },
+    skipWhitespace() {
+      while (/\s/.test(this.input[this.index] || "")) this.index += 1;
+    },
+    parseExpression() {
+      let value = this.parseTerm();
+      while (true) {
+        if (this.consume("+")) value += this.parseTerm();
+        else if (this.consume("-")) value -= this.parseTerm();
+        else return value;
+      }
+    },
+    parseTerm() {
+      let value = this.parsePower();
+      while (true) {
+        if (this.consume("*")) {
+          value *= this.parsePower();
+        } else if (this.consume("/")) {
+          value /= this.parsePower();
+        } else {
+          return value;
+        }
+      }
+    },
+    parsePower() {
+      const base = this.parseUnary();
+      if (this.consume("**")) {
+        return base ** this.parsePower();
+      }
+      return base;
+    },
+    parseUnary() {
+      if (this.consume("+")) return this.parseUnary();
+      if (this.consume("-")) return -this.parseUnary();
+      return this.parsePrimary();
+    },
+    parsePrimary() {
+      if (this.consume("(")) {
+        const value = this.parseExpression();
+        if (!this.consume(")")) throw new Error("missing closing parenthesis");
+        return value;
+      }
+      return this.parseNumber();
+    },
+    parseNumber() {
+      this.skipWhitespace();
+      const match = this.input.slice(this.index).match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?/i);
+      if (!match) throw new Error("expected number");
+      this.index += match[0].length;
+      return Number(match[0]);
+    },
+  };
+
+  const value = parser.parseExpression();
+  parser.skipWhitespace();
+  if (parser.index !== parser.input.length) throw new Error("unexpected token");
+  return value;
 }
 
 function stripComment(line) {

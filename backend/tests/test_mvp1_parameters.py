@@ -4,6 +4,7 @@ import sympy as sp
 
 from backend.app.parameters import TwoPortParameterSolver
 from backend.app.parser import parse_netlist
+from backend.app.parser.netlist import parse_value
 
 
 EJEMPLO_1_NETLIST = """
@@ -46,3 +47,10 @@ def test_z_to_y_matches_direct_y_solution() -> None:
     y_matrix = solver.solve_y().matrix
 
     assert sp.simplify(z_matrix.inv() - y_matrix) == sp.zeros(2, 2)
+
+
+def test_symbolic_omega_aliases_parse_as_frequency_symbol() -> None:
+    w = sp.Symbol("w")
+
+    assert parse_value("j*ω*10m") == sp.I * w / 100
+    assert parse_value("j*Ω*10m") == sp.I * w / 100

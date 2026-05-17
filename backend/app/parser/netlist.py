@@ -63,10 +63,11 @@ def parse_netlist(text: str, circuit_id: str = "netlist") -> TwoPortCircuit:
 
 def parse_value(raw: str) -> sp.Expr:
     normalized = raw.strip().replace(",", ".").replace("^", "**")
-    normalized = normalized.replace("ω", "w")
+    normalized = normalized.replace("ω", "w").replace("Ω", "w")
     suffix_value = _parse_metric_suffix(normalized)
     if suffix_value is not None:
         return suffix_value
+    normalized = _expand_metric_suffixes(normalized)
     locals_map = {
         "j": sp.I,
         "J": sp.I,
@@ -111,7 +112,7 @@ def _strip_comment(line: str) -> str:
 
 
 def _parse_metric_suffix(value: str) -> sp.Expr | None:
-    match = re.fullmatch(r"([+-]?(?:\d+(?:\.\d*)?|\.\d+))([a-zA-Z]+)", value)
+    match = re.fullmatch(r"([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)([a-zA-Z]+)", value)
     if not match:
         return None
     number, suffix = match.groups()
@@ -119,3 +120,14 @@ def _parse_metric_suffix(value: str) -> sp.Expr | None:
     if factor is None:
         return None
     return sp.Rational(number) * factor
+
+
+def _expand_metric_suffixes(value: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        number, suffix = match.groups()
+        factor = _METRIC_SUFFIXES.get(suffix.lower())
+        if factor is None:
+            return match.group(0)
+        return f"({number}*{sp.sstr(factor)})"
+
+    return re.sub(r"(?<![A-Za-z_])([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)([a-zA-Z]+)\b", replace, value)

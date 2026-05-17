@@ -7,7 +7,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 $Cli = Join-Path $Root ".netlify-cli-tmp\node_modules\.bin\netlify.cmd"
 
 if (-not (Test-Path $Cli)) {
-    npm install --prefix (Join-Path $Root ".netlify-cli-tmp") --no-audit --no-fund netlify-cli@24.11.3
+    npm install --prefix (Join-Path $Root ".netlify-cli-tmp") --no-audit --no-fund netlify-cli@26.0.2
 }
 
 Push-Location $Root

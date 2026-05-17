@@ -80,6 +80,17 @@ assert.equal(parsed.components.length, 5);
 assert.equal(parsed.ports.p1.positive, "1");
 assert.equal(parsed.ports.p2.positive, "2");
 
+const scalarExpressions = parseNetlist([
+  "R1 1 n1 .5k",
+  "R2 n1 n2 2*(3+4)",
+  "R3 n2 2 2**3",
+  "R4 n2 0 1e-3",
+].join("\n"));
+close(scalarExpressions.components[0].numeric, 500);
+close(scalarExpressions.components[1].numeric, 14);
+close(scalarExpressions.components[2].numeric, 8);
+close(scalarExpressions.components[3].numeric, 0.001);
+
 const lowerRailPreview = buildPreview(EXAMPLES.inferior.netlist);
 assert.match(lowerRailPreview.svg, /rama inferior/);
 assert.match(lowerRailPreview.svg, />b1</);
@@ -174,4 +185,4 @@ assert.equal(series.brune.valid, false);
 assert.throws(() => convertMatrix("Z", "Y", [[1, 2], [2, 4]]), /DeltaZ|Determinante/);
 assert.throws(() => solveTwoPort("R1 1 2 10"), /singular/i);
 
-console.log(`OK: ${previewCases.length + 43} pruebas de core ejecutadas.`);
+console.log(`OK: ${previewCases.length + 47} pruebas de core ejecutadas.`);

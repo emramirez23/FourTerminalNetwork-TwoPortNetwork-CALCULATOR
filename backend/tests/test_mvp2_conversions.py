@@ -86,3 +86,19 @@ def test_10_api_convert_endpoint_handles_pdf_examples() -> None:
     assert payload["conversions"]["Gamma"]["status"] == "ok"
     assert payload["conversions"]["Gamma"]["matrix"]["decimal"] == [["4.41667", "154.167"], ["0.0654762", "2.5119"]]
     assert payload["conversions"]["Y"]["status"] == "ok"
+
+
+def test_11_api_convert_accepts_omega_symbol_aliases() -> None:
+    response = TestClient(app).post(
+        "/convert",
+        json={
+            "source_family": "Z",
+            "matrix": [["1", "0"], ["0", "j*ω"]],
+            "target_families": ["h"],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["conversions"]["h"]["status"] == "ok"
+    assert payload["conversions"]["h"]["matrix"]["exact"][0][0] == "1"

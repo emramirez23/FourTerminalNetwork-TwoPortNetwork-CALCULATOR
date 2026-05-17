@@ -5,7 +5,7 @@ $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $webRoot = Join-Path $projectRoot "web"
 $artifactRoot = Join-Path $projectRoot "artifacts\local_server"
 $preferredPort = 8888
-$assetVersion = "20260516-theme-i18n"
+$assetVersion = "20260517-audit-fixes"
 
 function Test-PortOpen {
   param([int] $Port)

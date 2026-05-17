@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -303,9 +304,39 @@ def _parse_expr(value: object) -> sp.Expr:
         return sp.Integer(value)
     if isinstance(value, float):
         return sp.Rational(str(value))
-    normalized = str(value).strip().replace(",", ".").replace("^", "**").replace("omega", "w")
+    normalized = (
+        str(value)
+        .strip()
+        .replace(",", ".")
+        .replace("^", "**")
+        .replace("omega", "w")
+        .replace("ω", "w")
+        .replace("Ω", "w")
+    )
+    normalized = _expand_metric_suffixes(normalized)
     locals_map = {"j": sp.I, "J": sp.I, "I": sp.I, "s": sp.Symbol("s"), "w": sp.Symbol("w"), "pi": sp.pi}
     try:
         return sp.sympify(normalized, locals=locals_map)
     except (sp.SympifyError, SyntaxError) as exc:
         raise ConversionError(f"Cannot parse matrix value {value!r}.") from exc
+
+
+def _expand_metric_suffixes(value: str) -> str:
+    suffixes = {
+        "p": sp.Rational(1, 10**12),
+        "n": sp.Rational(1, 10**9),
+        "u": sp.Rational(1, 10**6),
+        "m": sp.Rational(1, 1000),
+        "k": sp.Integer(1000),
+        "meg": sp.Integer(1_000_000),
+        "g": sp.Integer(1_000_000_000),
+    }
+
+    def replace(match: re.Match[str]) -> str:
+        number, suffix = match.groups()
+        factor = suffixes.get(suffix.lower())
+        if factor is None:
+            return match.group(0)
+        return f"({number}*{sp.sstr(factor)})"
+
+    return re.sub(r"(?<![A-Za-z_])([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)([a-zA-Z]+)\b", replace, value)

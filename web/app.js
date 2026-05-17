@@ -9,7 +9,7 @@ import {
   generateReport,
   parseMatrixText,
   solveTwoPort,
-} from "./core.js?v=20260516-theme-i18n";
+} from "./core.js?v=20260517-audit-fixes";
 
 const state = {
   preview: null,
