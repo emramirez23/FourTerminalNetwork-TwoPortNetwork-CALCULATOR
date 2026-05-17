@@ -1032,9 +1032,9 @@ function parseScalar(raw) {
   if (typeof raw === "number") return raw;
   let text = String(raw).trim().replace(",", ".");
   if (!text) return NaN;
-  const suffix = text.match(/^([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?)([kKmMuUnNpP])$/i);
+  const suffix = text.match(/^([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?)([gGkKmMuUnNpP])$/i);
   if (suffix) {
-    const multipliers = { k: 1e3, K: 1e3, M: 1e6, m: 1e-3, u: 1e-6, U: 1e-6, n: 1e-9, N: 1e-9, p: 1e-12, P: 1e-12 };
+    const multipliers = { G: 1e9, g: 1e9, k: 1e3, K: 1e3, M: 1e6, m: 1e-3, u: 1e-6, U: 1e-6, n: 1e-9, N: 1e-9, p: 1e-12, P: 1e-12 };
     return Number(suffix[1]) * multipliers[suffix[2]];
   }
   if (!/^[0-9eE+\-*/().\s]+$/.test(text)) return NaN;

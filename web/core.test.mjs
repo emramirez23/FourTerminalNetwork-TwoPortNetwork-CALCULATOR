@@ -85,11 +85,23 @@ const scalarExpressions = parseNetlist([
   "R2 n1 n2 2*(3+4)",
   "R3 n2 2 2**3",
   "R4 n2 0 1e-3",
+  "R5 n2 n3 10m",
+  "R6 n3 n4 10u",
+  "R7 n4 n5 10M",
+  "R8 n5 n6 10G",
+  "R9 n6 n7 10k",
+  "R10 n7 2 10K",
 ].join("\n"));
 close(scalarExpressions.components[0].numeric, 500);
 close(scalarExpressions.components[1].numeric, 14);
 close(scalarExpressions.components[2].numeric, 8);
 close(scalarExpressions.components[3].numeric, 0.001);
+close(scalarExpressions.components[4].numeric, 0.01);
+close(scalarExpressions.components[5].numeric, 0.00001);
+close(scalarExpressions.components[6].numeric, 10000000);
+close(scalarExpressions.components[7].numeric, 10000000000);
+close(scalarExpressions.components[8].numeric, 10000);
+close(scalarExpressions.components[9].numeric, 10000);
 
 const lowerRailPreview = buildPreview(EXAMPLES.inferior.netlist);
 assert.match(lowerRailPreview.svg, /rama inferior/);
@@ -185,4 +197,4 @@ assert.equal(series.brune.valid, false);
 assert.throws(() => convertMatrix("Z", "Y", [[1, 2], [2, 4]]), /DeltaZ|Determinante/);
 assert.throws(() => solveTwoPort("R1 1 2 10"), /singular/i);
 
-console.log(`OK: ${previewCases.length + 47} pruebas de core ejecutadas.`);
+console.log(`OK: ${previewCases.length + 53} pruebas de core ejecutadas.`);

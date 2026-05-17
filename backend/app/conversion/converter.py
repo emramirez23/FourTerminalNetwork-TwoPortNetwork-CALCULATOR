@@ -324,17 +324,25 @@ def _parse_expr(value: object) -> sp.Expr:
 def _expand_metric_suffixes(value: str) -> str:
     suffixes = {
         "p": sp.Rational(1, 10**12),
+        "P": sp.Rational(1, 10**12),
         "n": sp.Rational(1, 10**9),
+        "N": sp.Rational(1, 10**9),
         "u": sp.Rational(1, 10**6),
+        "U": sp.Rational(1, 10**6),
         "m": sp.Rational(1, 1000),
         "k": sp.Integer(1000),
+        "K": sp.Integer(1000),
+        "M": sp.Integer(1_000_000),
         "meg": sp.Integer(1_000_000),
+        "Meg": sp.Integer(1_000_000),
+        "MEG": sp.Integer(1_000_000),
         "g": sp.Integer(1_000_000_000),
+        "G": sp.Integer(1_000_000_000),
     }
 
     def replace(match: re.Match[str]) -> str:
         number, suffix = match.groups()
-        factor = suffixes.get(suffix.lower())
+        factor = suffixes["meg"] if suffix.lower() == "meg" else suffixes.get(suffix)
         if factor is None:
             return match.group(0)
         return f"({number}*{sp.sstr(factor)})"

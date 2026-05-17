@@ -14,12 +14,20 @@ class NetlistParseError(ValueError):
 
 _METRIC_SUFFIXES = {
     "p": sp.Rational(1, 10**12),
+    "P": sp.Rational(1, 10**12),
     "n": sp.Rational(1, 10**9),
+    "N": sp.Rational(1, 10**9),
     "u": sp.Rational(1, 10**6),
+    "U": sp.Rational(1, 10**6),
     "m": sp.Rational(1, 1000),
     "k": sp.Integer(1000),
+    "K": sp.Integer(1000),
+    "M": sp.Integer(1_000_000),
     "meg": sp.Integer(1_000_000),
+    "Meg": sp.Integer(1_000_000),
+    "MEG": sp.Integer(1_000_000),
     "g": sp.Integer(1_000_000_000),
+    "G": sp.Integer(1_000_000_000),
 }
 
 
@@ -116,7 +124,7 @@ def _parse_metric_suffix(value: str) -> sp.Expr | None:
     if not match:
         return None
     number, suffix = match.groups()
-    factor = _METRIC_SUFFIXES.get(suffix.lower())
+    factor = _metric_factor(suffix)
     if factor is None:
         return None
     return sp.Rational(number) * factor
@@ -125,9 +133,15 @@ def _parse_metric_suffix(value: str) -> sp.Expr | None:
 def _expand_metric_suffixes(value: str) -> str:
     def replace(match: re.Match[str]) -> str:
         number, suffix = match.groups()
-        factor = _METRIC_SUFFIXES.get(suffix.lower())
+        factor = _metric_factor(suffix)
         if factor is None:
             return match.group(0)
         return f"({number}*{sp.sstr(factor)})"
 
     return re.sub(r"(?<![A-Za-z_])([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)([a-zA-Z]+)\b", replace, value)
+
+
+def _metric_factor(suffix: str) -> sp.Expr | None:
+    if suffix.lower() == "meg":
+        return _METRIC_SUFFIXES["meg"]
+    return _METRIC_SUFFIXES.get(suffix)

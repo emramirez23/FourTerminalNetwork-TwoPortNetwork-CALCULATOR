@@ -88,7 +88,23 @@ def test_10_api_convert_endpoint_handles_pdf_examples() -> None:
     assert payload["conversions"]["Y"]["status"] == "ok"
 
 
-def test_11_api_convert_accepts_omega_symbol_aliases() -> None:
+def test_11_api_convert_metric_suffixes_are_case_sensitive() -> None:
+    response = TestClient(app).post(
+        "/convert",
+        json={
+            "source_family": "Z",
+            "matrix": [["10m", "10u"], ["10M", "10G"]],
+            "target_families": ["Z"],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["input_matrix"]["exact"] == [["1/100", "1/100000"], ["10000000", "10000000000"]]
+    assert payload["conversions"]["Z"]["status"] == "ok"
+
+
+def test_12_api_convert_accepts_omega_symbol_aliases() -> None:
     response = TestClient(app).post(
         "/convert",
         json={

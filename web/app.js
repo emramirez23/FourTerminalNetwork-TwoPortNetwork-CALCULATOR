@@ -9,7 +9,7 @@ import {
   generateReport,
   parseMatrixText,
   solveTwoPort,
-} from "./core.js?v=20260517-audit-fixes";
+} from "./core.js?v=20260517-suffix-fixes";
 
 const state = {
   preview: null,

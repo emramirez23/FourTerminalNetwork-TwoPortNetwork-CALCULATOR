@@ -49,6 +49,22 @@ def test_z_to_y_matches_direct_y_solution() -> None:
     assert sp.simplify(z_matrix.inv() - y_matrix) == sp.zeros(2, 2)
 
 
+def test_metric_suffixes_are_case_sensitive() -> None:
+    assert parse_value("10m") == sp.Rational(1, 100)
+    assert parse_value("10u") == sp.Rational(1, 100_000)
+    assert parse_value("10M") == sp.Integer(10_000_000)
+    assert parse_value("10G") == sp.Integer(10_000_000_000)
+    assert parse_value("10k") == sp.Integer(10_000)
+    assert parse_value("10K") == sp.Integer(10_000)
+
+
+def test_metric_suffixes_expand_inside_symbolic_expressions() -> None:
+    w = sp.Symbol("w")
+
+    assert parse_value("j*w*10m") == sp.I * w / 100
+    assert parse_value("j*w*10M") == sp.I * w * 10_000_000
+
+
 def test_symbolic_omega_aliases_parse_as_frequency_symbol() -> None:
     w = sp.Symbol("w")
 
