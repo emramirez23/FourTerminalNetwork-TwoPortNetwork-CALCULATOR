@@ -1,6 +1,6 @@
 # FourTerminalNetwork TwoPortNetwork CALCULATOR
 
-Calculadora y simulador educativo de cuadripolos / redes de dos puertos.
+Calculadora y simulador de cuadripolos / redes de dos puertos.
 
 Sitio online:
 
@@ -17,6 +17,12 @@ https://fourterminalnetwork-twoportnetwork-calculator.netlify.app/
 - Modo claro/oscuro e interfaz en Espanol/Ingles.
 - Exportacion de resultados en Markdown, LaTeX, JSON y PDF.
 
+## Estado actual
+
+- La web estatica en `web/` es la interfaz principal para uso local y despliegue en Netlify.
+- El backend Python en `backend/` sigue siendo el motor de referencia local para pruebas, validacion y crecimiento simbolico.
+- El frontend ahora esta separado en parser, solver, conversiones, reportes y preview para reducir deuda tecnica sin romper compatibilidad.
+
 ## Uso local
 
 ```powershell
@@ -31,7 +37,20 @@ http://127.0.0.1:8888
 
 Tambien puede abrirse con doble click usando `Abrir Simulador.bat`.
 
+Tambien hay comandos de trabajo unificados en la raiz:
+
+```powershell
+npm start
+npm test
+```
+
 ## Pruebas
+
+Suite completa:
+
+```powershell
+npm test
+```
 
 Frontend estatico:
 

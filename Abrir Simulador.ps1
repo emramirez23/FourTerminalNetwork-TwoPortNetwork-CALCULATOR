@@ -1,11 +1,25 @@
 $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Windows.Forms
 
-$projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$projectRoot = if ($PSCommandPath) { Split-Path -Parent $PSCommandPath } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 $webRoot = Join-Path $projectRoot "web"
 $artifactRoot = Join-Path $projectRoot "artifacts\local_server"
 $preferredPort = 8888
-$assetVersion = "20260517-suffix-fixes"
+$assetVersion = "20260517-hero-controls-only"
+$pythonCommand = $null
+
+function Get-PythonCommand {
+  foreach ($candidate in @("py", "python")) {
+    try {
+      $command = Get-Command $candidate -ErrorAction Stop
+      return $command.Source
+    } catch {
+      continue
+    }
+  }
+
+  throw "No se encontro una instalacion de Python disponible en PATH."
+}
 
 function Test-PortOpen {
   param([int] $Port)
@@ -36,7 +50,9 @@ function Test-SimulatorServer {
       -Headers @{ "Cache-Control" = "no-cache" } `
       -TimeoutSec 2
 
-    return ($response.Content -like "*insertLowerBtn*" -and $response.Content -like "*app.js?v=$assetVersion*")
+    $hasCurrentUi = $response.Content -like "*exampleButtons*"
+    $hasExpectedAssets = ($response.Content -like "*styles.css?v=$assetVersion*") -and ($response.Content -like "*app.js?v=$assetVersion*")
+    return ($hasCurrentUi -and $hasExpectedAssets)
   } catch {
     return $false
   }
@@ -65,6 +81,7 @@ if (-not (Test-Path (Join-Path $webRoot "index.html"))) {
 }
 
 New-Item -ItemType Directory -Force -Path $artifactRoot | Out-Null
+$pythonCommand = Get-PythonCommand
 
 $port = $preferredPort
 $serverReady = (Test-PortOpen -Port $port) -and (Test-SimulatorServer -Port $port)
@@ -75,11 +92,12 @@ if ((Test-PortOpen -Port $port) -and -not $serverReady) {
 if (-not $serverReady) {
   $stdout = Join-Path $artifactRoot "http-server.out.log"
   $stderr = Join-Path $artifactRoot "http-server.err.log"
-  $arguments = "-m http.server $port --bind 127.0.0.1 -d `"$webRoot`""
+  $arguments = @("-m", "http.server", $port, "--bind", "127.0.0.1", "-d", $webRoot)
 
   Start-Process `
-    -FilePath "python" `
+    -FilePath $pythonCommand `
     -ArgumentList $arguments `
+    -WorkingDirectory $projectRoot `
     -WindowStyle Hidden `
     -RedirectStandardOutput $stdout `
     -RedirectStandardError $stderr | Out-Null
@@ -94,8 +112,13 @@ if (-not $serverReady) {
 }
 
 if (-not ((Test-PortOpen -Port $port) -and (Test-SimulatorServer -Port $port))) {
+  $details = ""
+  $stderrLog = Join-Path $artifactRoot "http-server.err.log"
+  if (Test-Path $stderrLog) {
+    $details = (Get-Content $stderrLog -ErrorAction SilentlyContinue | Select-Object -Last 10) -join [Environment]::NewLine
+  }
   [System.Windows.Forms.MessageBox]::Show(
-    "No se pudo iniciar el servidor local en el puerto $port. Revise artifacts\local_server\http-server.err.log.",
+    "No se pudo iniciar el servidor local en el puerto $port. Revise artifacts\local_server\http-server.err.log." + $(if ($details) { "`n`nUltimas lineas:`n$details" } else { "" }),
     "Simulador de Cuadripolos",
     "OK",
     "Error"

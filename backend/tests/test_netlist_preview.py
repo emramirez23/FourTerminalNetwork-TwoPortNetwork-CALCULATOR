@@ -15,6 +15,7 @@ def test_preview_builds_mermaid_and_component_table() -> None:
     assert "<svg" in preview["svg"]
     assert "Diagrama esquematico" in preview["markdown"]
     assert "```mermaid" in preview["markdown"]
+    assert "Convencion de bornes" in preview["markdown"]
     assert "R1<br/>R = 30" in preview["mermaid"]
     assert "| 1 | R1 | R | 1 - n1 | 30 | 30 |" in preview["markdown"]
     assert preview["warnings"] == []
@@ -47,7 +48,7 @@ def test_preview_page_is_served() -> None:
     response = TestClient(app).get("/netlist-preview")
 
     assert response.status_code == 200
-    assert "Vista previa viva de netlist" in response.text
+    assert "Vista previa de netlist" in response.text
     assert "params.get(\"netlist\")" in response.text
 
 
@@ -82,6 +83,7 @@ TYPICAL_PREVIEW_CASES = [
     ("gnd_reference", "R1 1 n1 10\nR2 n1 gnd 20\nR3 n1 2 30", 3),
     ("bridged_ladder_from_tables", "R1 1 n1 10\nR2 n1 2 20\nR3 n1 0 30\nR4 1 2 40", 4),
     ("symmetric_x_lattice", ".ports 1 1p 2 2p\nZ1 1 2 Za\nZ2 1p 2p Za\nZ3 1 2p Zb\nZ4 1p 2 Zb", 4),
+    ("apostrophe_terminal_names", ".ports 1 1' 2 2'\nR1 1 2 80\nR2 1' 2' 80\nR3 1 2' 120\nR4 1' 2 120", 4),
 ]
 
 

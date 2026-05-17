@@ -11,6 +11,9 @@ import {
   parseNetlist,
   solveTwoPort,
 } from "./core.js";
+import { parseNetlist as parseNetlistModule } from "./netlist.js";
+import { convertMatrix as convertMatrixModule } from "./matrix.js";
+import { solveTwoPort as solveTwoPortModule } from "./solver.js";
 
 const close = (actual, expected, tolerance = 1e-5) => {
   assert.ok(Math.abs(actual - expected) < tolerance, `expected ${actual} ~= ${expected}`);
@@ -57,6 +60,7 @@ const previewCases = [
   EXAMPLES.x.netlist,
   EXAMPLES.inferior.netlist,
   ["R1 1 n1 30", "R2 n1 0 40", "R3 n1 2 50"].join("\n"),
+  [".ports 1 1' 2 2'", "R1 1 2 80", "R2 1' 2' 80", "R3 1 2' 120", "R4 1' 2 120"].join("\n"),
   ["R1 1 0 10", "R2 1 0 20", "R3 1 0 30"].join("\n"),
   ["R1 1 n1 10", "R2 n1 n2 20", "R3 n2 2 30", "R4 n1 0 40", "R5 n2 0 50"].join("\n"),
   ["Z1 1 n1 10", "Z2 n1 2 20", "Y1 n1 0 0.05"].join("\n"),
@@ -79,6 +83,16 @@ const parsed = parseNetlist(DEFAULT_NETLIST);
 assert.equal(parsed.components.length, 5);
 assert.equal(parsed.ports.p1.positive, "1");
 assert.equal(parsed.ports.p2.positive, "2");
+
+const apostrophePorts = parseNetlist(".ports 1 1' 2 2'\nR1 1 2 80\nR2 1' 2' 80");
+assert.equal(apostrophePorts.ports.p1.negative, "1'");
+assert.equal(apostrophePorts.ports.p2.negative, "2'");
+
+const duplicateIds = parseNetlistModule("R1 1 0 10\nR1 1 2 20");
+assert.match(duplicateIds.warnings.join("\n"), /identificador R1 esta repetido/i);
+
+const selfLoop = parseNetlistModule("R1 1 1 10");
+assert.match(selfLoop.warnings.join("\n"), /mismo nodo en ambos extremos/i);
 
 const scalarExpressions = parseNetlist([
   "R1 1 n1 .5k",
@@ -134,17 +148,22 @@ assert.ok(svgHeight(stackedDualRailPreview.svg) > 500);
 assert.doesNotMatch(stackedDualRailPreview.svg, / y="-/);
 
 const solved = solveTwoPort(DEFAULT_NETLIST);
+const solvedModule = solveTwoPortModule(DEFAULT_NETLIST);
 close(solved.z[0][0], 610 / 11);
 close(solved.z[0][1], 80 / 11);
 close(solved.z[1][0], 80 / 11);
 close(solved.z[1][1], 290 / 11);
 assert.equal(solved.reciprocalZ, true);
+assert.deepEqual(solvedModule.z, solved.z);
+assert.deepEqual(solvedModule.y, solved.y);
 
 const yFromZ = convertMatrix("Z", "Y", solved.z);
+const yFromZModule = convertMatrixModule("Z", "Y", solved.z);
 close(yFromZ.result[0][0], solved.y[0][0]);
 close(yFromZ.result[0][1], solved.y[0][1]);
 close(yFromZ.result[1][0], solved.y[1][0]);
 close(yFromZ.result[1][1], solved.y[1][1]);
+assert.deepEqual(yFromZModule.result, yFromZ.result);
 
 const hFromZ = convertMatrix("Z", "h", solved.z);
 assert.equal(hFromZ.target, "h");
@@ -197,4 +216,4 @@ assert.equal(series.brune.valid, false);
 assert.throws(() => convertMatrix("Z", "Y", [[1, 2], [2, 4]]), /DeltaZ|Determinante/);
 assert.throws(() => solveTwoPort("R1 1 2 10"), /singular/i);
 
-console.log(`OK: ${previewCases.length + 53} pruebas de core ejecutadas.`);
+console.log(`OK: ${previewCases.length + 55} pruebas de core ejecutadas.`);

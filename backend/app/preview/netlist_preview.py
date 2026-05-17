@@ -137,6 +137,12 @@ def _build_markdown(
     lines.extend(
         [
             "",
+            "## Convencion de bornes",
+            "",
+            "- El esquema grafico siempre rotula los bornes como 1, 1', 2 y 2'.",
+            "- Si no se declara `.ports`, se usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun que el dibujo muestra como 1' y 2'.",
+            "- Para retornos inferiores independientes, declare por ejemplo `.ports 1 1' 2 2'`.",
+            "",
             "## Componentes",
             "",
             "| Linea | Componente | Tipo | Conexion | Valor | Interpretacion |",

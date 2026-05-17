@@ -3,7 +3,7 @@
 Este MVP implementa el primer tramo del simulador:
 
 - Entrada por netlist pasivo.
-- Puertos por defecto `P1=(1,0)` y `P2=(2,0)`.
+- Puertos por defecto `P1=(1,0)` y `P2=(2,0)`, dibujados como bornes `1`, `1'`, `2` y `2'` con retorno comun en `0`.
 - Directivas opcionales `.port P1 nodo+ nodo-` y `.port P2 nodo+ nodo-`.
 - Calculo de parametros `Z` por puerto abierto.
 - Calculo de parametros `Y` por puerto en cortocircuito.
@@ -13,7 +13,7 @@ Este MVP implementa el primer tramo del simulador:
 - Pruebas con el ejercicio de ejemplo 1 de los PDFs de cuadripolos.
 
 El MVP2 ya agrega conversiones entre matrices. Ver [README_MVP2.md](README_MVP2.md).
-Tambien hay una primera vista previa viva de netlist. Ver [README_NETLIST_PREVIEW.md](README_NETLIST_PREVIEW.md).
+Tambien hay una primera vista previa de netlist. Ver [README_NETLIST_PREVIEW.md](README_NETLIST_PREVIEW.md).
 
 ## Instalar
 

@@ -4,20 +4,37 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulador de Cuadripolos UTN</title>
-  <link rel="stylesheet" href="./styles.css">
-  <script type="module" src="./app.js?v=20260517-suffix-fixes"></script>
+  <link rel="stylesheet" href="./styles.css?v=20260517-hero-controls-only">
+  <script type="module" src="./app.js?v=20260517-hero-controls-only"></script>
 </head>
 <body>
   <header class="hero">
     <div>
+      <div class="hero-brand">
+        <img src="./assets/logo_utn_clean.png" alt="UTN Avellaneda" class="utn-logo">
+        <div class="creator-card" aria-label="Autor">
+          <span class="creator-name" data-i18n="hero.author">BY ELÍAS RAMÍREZ</span>
+          <div class="social-links">
+            <a class="social-link" href="https://www.linkedin.com/in/elias-ramirez-rolon/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn de Elías Ramírez">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0ZM7.1 20.45H3.54V9H7.1v11.45ZM5.32 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm15.13 13.02h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28Z"/>
+              </svg>
+              <span>LinkedIn</span>
+            </a>
+            <a class="social-link" href="https://github.com/emramirez23" target="_blank" rel="noopener noreferrer" aria-label="GitHub de Elías Ramírez">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M12 .5C5.73 .5.75 5.58.75 11.93c0 5.05 3.27 9.33 7.8 10.84.57.1.78-.25.78-.55v-2c-3.17.7-3.84-1.55-3.84-1.55-.52-1.34-1.27-1.7-1.27-1.7-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.2 1.76 1.2 1.02 1.78 2.68 1.27 3.34.97.1-.75.4-1.27.72-1.56-2.53-.29-5.19-1.29-5.19-5.73 0-1.27.44-2.3 1.17-3.12-.12-.29-.51-1.47.11-3.08 0 0 .96-.31 3.14 1.19.91-.26 1.89-.38 2.86-.39.97.01 1.95.13 2.86.39 2.18-1.5 3.13-1.19 3.13-1.19.62 1.61.23 2.79.11 3.08.73.82 1.17 1.85 1.17 3.12 0 4.45-2.66 5.43-5.2 5.72.41.36.77 1.07.77 2.15v3.19c0 .3.21.66.79.55 4.52-1.51 7.79-5.79 7.79-10.84C23.25 5.58 18.27.5 12 .5Z"/>
+              </svg>
+              <span>GitHub</span>
+            </a>
+          </div>
+        </div>
+      </div>
       <p class="eyebrow" data-i18n="hero.eyebrow">Teoria de Circuitos II - UTN</p>
-      <h1 data-i18n="hero.title">Simulador educativo de cuadripolos</h1>
+      <h1 data-i18n="hero.title">Simulador de cuadripolos</h1>
       <p class="lead" data-i18n="hero.lead">Dibuja la netlist en vivo, calcula parametros Z/Y, convierte familias, asocia cuadripolos y genera una resolucion tipo apunte.</p>
     </div>
-    <div class="hero-card">
-      <span id="statusBadge">Listo</span>
-      <strong>MVP1 + MVP2 + base MVP3-5</strong>
-      <small data-i18n="hero.cardText">Version web estatica lista para Netlify</small>
+    <div class="hero-card hero-card--controls-only">
       <div class="preference-actions" aria-label="Preferencias">
         <button id="themeToggleBtn" class="secondary compact" type="button" aria-pressed="false"></button>
         <button id="languageToggleBtn" class="secondary compact" type="button" aria-pressed="false"></button>
@@ -30,36 +47,17 @@
       <div class="panel-title">
         <div>
           <span class="tag" data-i18n="sections.inputTag">Entrada</span>
-          <h2 data-i18n="sections.netlistTitle">Netlist viva</h2>
+          <h2 data-i18n="sections.netlistTitle">Netlist</h2>
         </div>
         <div class="inline-actions">
-          <select id="exampleSelect" aria-label="Ejemplos" data-i18n-aria-label="actions.examples"></select>
-          <button id="loadExampleBtn" type="button" data-i18n="actions.load">Cargar</button>
           <button id="clearBtn" class="secondary" type="button" data-i18n="actions.clear">Limpiar</button>
         </div>
       </div>
-      <textarea id="netlist" spellcheck="false" aria-label="Netlist" data-i18n-aria-label="fields.netlist"></textarea>
-
-      <div class="builder">
-        <div>
-          <span class="tag">MVP4</span>
-          <h3 data-i18n="builder.title">Constructor rapido</h3>
-          <p data-i18n="builder.description">Primera version de editor grafico: agrega ramas tipicas del apunte y actualiza el esquema.</p>
-        </div>
-        <label><span data-i18n="builder.value">Valor</span>
-          <input id="builderValue" value="50" inputmode="decimal">
-        </label>
-        <div class="builder-actions">
-          <button id="addSeriesBtn" type="button" data-i18n="builder.series">Serie 1-2</button>
-          <button id="addInputShuntBtn" type="button" data-i18n="builder.inputShunt">Derivacion entrada</button>
-          <button id="addMiddleShuntBtn" type="button" data-i18n="builder.middleShunt">Derivacion nodo medio</button>
-          <button id="addOutputShuntBtn" type="button" data-i18n="builder.outputShunt">Derivacion salida</button>
-          <button id="insertTBtn" class="secondary" type="button" data-i18n="builder.insertT">Insertar T</button>
-          <button id="insertPiBtn" class="secondary" type="button" data-i18n="builder.insertPi">Insertar pi</button>
-          <button id="insertLowerBtn" class="secondary" type="button" data-i18n="builder.lowerRail">Rama inferior</button>
-          <button id="insertLadderBtn" class="secondary" type="button" data-i18n="builder.ladder">Escalera</button>
-        </div>
+      <div class="netlist-note">
+        <strong data-i18n="netlistNote.title">Convencion fija de bornes</strong>
+        <p data-i18n="netlistNote.body">El diagrama siempre muestra 1, 1', 2 y 2'. Si no declaras .ports, la netlist usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun dibujado como 1' y 2'. Para retornos independientes usa .ports 1 1' 2 2'.</p>
       </div>
+      <textarea id="netlist" spellcheck="false" aria-label="Netlist" data-i18n-aria-label="fields.netlist"></textarea>
     </section>
 
     <section class="panel schematic-panel">
@@ -73,7 +71,7 @@
       <div id="warnings" class="warnings"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel solve-panel">
       <div class="panel-title">
         <div>
           <span class="tag">MVP1</span>
@@ -84,7 +82,35 @@
       <div id="solveOutput" class="output"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel builder-panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag">MVP4</span>
+          <h2 data-i18n="builder.title">Constructor rapido</h2>
+        </div>
+      </div>
+      <div class="builder">
+        <p data-i18n="builder.description">Primera version de editor grafico: agrega ramas tipicas del apunte y actualiza el esquema.</p>
+        <label><span data-i18n="builder.value">Valor</span>
+          <input id="builderValue" value="50" inputmode="decimal">
+        </label>
+        <div class="builder-group">
+          <strong data-i18n="builder.quickBranches">Ramas rapidas</strong>
+          <div class="builder-actions">
+            <button id="addSeriesBtn" type="button" data-i18n="builder.series">Serie 1-2</button>
+            <button id="addInputShuntBtn" type="button" data-i18n="builder.inputShunt">Derivacion entrada</button>
+            <button id="addMiddleShuntBtn" type="button" data-i18n="builder.middleShunt">Derivacion nodo medio</button>
+            <button id="addOutputShuntBtn" type="button" data-i18n="builder.outputShunt">Derivacion salida</button>
+          </div>
+        </div>
+        <div class="builder-group">
+          <strong data-i18n="builder.typicalTopologies">Topologias tipicas</strong>
+          <div id="exampleButtons" class="builder-actions topology-actions" aria-label="Topologias tipicas" data-i18n-aria-label="builder.typicalTopologies"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel conversion-panel">
       <div class="panel-title">
         <div>
           <span class="tag">MVP2</span>
@@ -112,13 +138,31 @@
           </select>
         </label>
       </div>
-      <label class="wide-label"><span data-i18n="fields.matrix2x2">Matriz 2x2</span>
-        <textarea id="matrixInput" class="small-textarea" spellcheck="false"></textarea>
-      </label>
+      <div class="wide-label matrix-input-group">
+        <span data-i18n="fields.matrix2x2">Matriz 2x2</span>
+        <div class="matrix-input-grid" role="group" aria-label="Matriz 2x2" data-i18n-aria-label="fields.matrix2x2">
+          <label class="matrix-input-cell">
+            <span class="matrix-index-notation" data-matrix-source-label="11" aria-hidden="true"><span class="matrix-index-glyph">Z</span><span class="matrix-index-sub">11</span></span>
+            <input id="matrixInput11" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente Z11">
+          </label>
+          <label class="matrix-input-cell">
+            <span class="matrix-index-notation" data-matrix-source-label="12" aria-hidden="true"><span class="matrix-index-glyph">Z</span><span class="matrix-index-sub">12</span></span>
+            <input id="matrixInput12" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente Z12">
+          </label>
+          <label class="matrix-input-cell">
+            <span class="matrix-index-notation" data-matrix-source-label="21" aria-hidden="true"><span class="matrix-index-glyph">Z</span><span class="matrix-index-sub">21</span></span>
+            <input id="matrixInput21" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente Z21">
+          </label>
+          <label class="matrix-input-cell">
+            <span class="matrix-index-notation" data-matrix-source-label="22" aria-hidden="true"><span class="matrix-index-glyph">Z</span><span class="matrix-index-sub">22</span></span>
+            <input id="matrixInput22" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente Z22">
+          </label>
+        </div>
+      </div>
       <div id="conversionOutput" class="output"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel association-panel">
       <div class="panel-title">
         <div>
           <span class="tag">MVP3</span>
@@ -136,12 +180,24 @@
         </select>
       </label>
       <div class="form-grid">
-        <label><span data-i18n="fields.twoPortA">Cuadripolo A</span>
-          <textarea id="assocA" class="small-textarea" spellcheck="false"></textarea>
-        </label>
-        <label><span data-i18n="fields.twoPortB">Cuadripolo B</span>
-          <textarea id="assocB" class="small-textarea" spellcheck="false"></textarea>
-        </label>
+        <div class="matrix-input-group">
+          <span data-i18n="fields.twoPortA">Cuadripolo A</span>
+          <div class="matrix-input-grid" role="group" aria-label="Cuadripolo A" data-i18n-aria-label="fields.twoPortA">
+            <label class="matrix-input-cell"><span>A11</span><input id="assocA11" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente A11"></label>
+            <label class="matrix-input-cell"><span>A12</span><input id="assocA12" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente A12"></label>
+            <label class="matrix-input-cell"><span>A21</span><input id="assocA21" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente A21"></label>
+            <label class="matrix-input-cell"><span>A22</span><input id="assocA22" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente A22"></label>
+          </div>
+        </div>
+        <div class="matrix-input-group">
+          <span data-i18n="fields.twoPortB">Cuadripolo B</span>
+          <div class="matrix-input-grid" role="group" aria-label="Cuadripolo B" data-i18n-aria-label="fields.twoPortB">
+            <label class="matrix-input-cell"><span>B11</span><input id="assocB11" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente B11"></label>
+            <label class="matrix-input-cell"><span>B12</span><input id="assocB12" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente B12"></label>
+            <label class="matrix-input-cell"><span>B21</span><input id="assocB21" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente B21"></label>
+            <label class="matrix-input-cell"><span>B22</span><input id="assocB22" type="text" inputmode="decimal" spellcheck="false" aria-label="Coeficiente B22"></label>
+          </div>
+        </div>
       </div>
       <div class="form-grid brune">
         <label><span data-i18n="fields.brune1">Brune ensayo 1</span>

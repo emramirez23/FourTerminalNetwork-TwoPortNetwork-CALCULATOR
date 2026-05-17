@@ -203,8 +203,9 @@ _NETLIST_PREVIEW_HTML = """
 </head>
 <body>
   <header>
-    <h1>Vista previa viva de netlist</h1>
+    <h1>Vista previa de netlist</h1>
     <p>Escribi componentes en formato <code>R1 nodoA nodoB valor</code>. El diagrama, la tabla y las advertencias se actualizan mientras tipeas.</p>
+    <p>Convencion: el grafico muestra <code>1</code>, <code>1'</code>, <code>2</code> y <code>2'</code>. Sin <code>.ports</code>, la netlist usa <code>P1=(1,0)</code> y <code>P2=(2,0)</code>; el nodo <code>0</code> es el retorno comun dibujado como <code>1'</code> y <code>2'</code>.</p>
   </header>
   <main>
     <section>

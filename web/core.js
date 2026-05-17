@@ -436,6 +436,12 @@ function buildMarkdown(parsed, svg) {
     `| P1 | V1 | I1 | ${parsed.ports.p1.positive} - ${parsed.ports.p1.negative} |`,
     `| P2 | V2 | I2 | ${parsed.ports.p2.positive} - ${parsed.ports.p2.negative} |`,
     "",
+    "## Convencion de bornes",
+    "",
+    "- El esquema grafico siempre rotula los bornes como 1, 1', 2 y 2'.",
+    "- Si no se declara `.ports`, se usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun que el dibujo muestra como 1' y 2'.",
+    "- Para retornos inferiores independientes, declare por ejemplo `.ports 1 1' 2 2'`.",
+    "",
     "## Componentes",
     "",
     "| Linea | Componente | Tipo | Conexion | Valor |",
@@ -879,7 +885,7 @@ function matrixToZ(source, matrix) {
     requireNonZero(delta, "DeltaY");
     return {
       result: invertMatrix(matrix),
-      conditions: [`DeltaY = ${formatNumber(delta)} debe ser distinto de cero.`],
+      conditions: [`ΔY = ${formatNumber(delta)} debe ser distinto de cero.`],
       steps: ["Z = inv(Y)."],
     };
   }
@@ -932,7 +938,7 @@ function zToFamily(target, z) {
     requireNonZero(delta, "DeltaZ");
     return {
       result: invertMatrix(z),
-      conditions: [`DeltaZ = ${formatNumber(delta)} debe ser distinto de cero.`],
+      conditions: [`ΔZ = ${formatNumber(delta)} debe ser distinto de cero.`],
       steps: ["Y = inv(Z)."],
     };
   }
@@ -966,7 +972,7 @@ function zToFamily(target, z) {
         [1 / z21, z22 / z21],
       ],
       conditions: [`z21 = ${formatNumber(z21)} debe ser distinto de cero.`],
-      steps: ["Gamma = [[z11/z21, DeltaZ/z21], [1/z21, z22/z21]]."],
+      steps: ["Gamma = [[z11/z21, ΔZ/z21], [1/z21, z22/z21]]."],
     };
   }
   throw new Error(`Familia no soportada: ${target}.`);

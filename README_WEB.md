@@ -2,6 +2,15 @@
 
 La UI integrada vive en `web/` y esta preparada para publicarse como sitio estatico en Netlify.
 
+## Estructura actual del frontend
+
+- `netlist.js`: parser liviano, ejemplos y utilidades de entrada.
+- `solver.js`: motor numerico del navegador para redes R/Z/Y.
+- `matrix.js`: conversiones, asociaciones y formateo de matrices.
+- `reports.js`: exportacion Markdown y LaTeX.
+- `core.js`: preview SVG y capa de compatibilidad para pruebas existentes.
+- `app.js`: estado, eventos e interfaz.
+
 ## Uso local
 
 ```powershell
@@ -16,9 +25,15 @@ http://127.0.0.1:8888
 
 Tambien puede abrirse con doble click usando `Abrir Simulador.bat` desde la raiz del proyecto. Ese script levanta el servidor local en el puerto `8888` y abre el navegador automaticamente.
 
+Si quiere abrir frontend y backend de referencia juntos:
+
+```powershell
+npm start
+```
+
 ## Alcance integrado
 
-- MVP1: ingreso por netlist, preview viva, calculo numerico de parametros Z/Y y derivacion automatica de h, g y Gamma/ABCD para redes R/Z/Y.
+- MVP1: ingreso por netlist, preview, calculo numerico de parametros Z/Y y derivacion automatica de h, g y Gamma/ABCD para redes R/Z/Y.
 - MVP2: conversion numerica entre Z, Y, h, g y gamma/ABCD con validacion de determinantes.
 - MVP3: asociacion por cascada, serie-serie, paralelo-paralelo, serie-paralelo y paralelo-serie sobre matrices 2x2.
 - MVP4: constructor grafico inicial por ramas tipicas T, pi, serie y derivaciones.
@@ -38,7 +53,11 @@ Los componentes `Z` e `Y` se muestran como bloques genericos porque representan 
 
 ## Rama inferior con nodos propios
 
-Para dibujar nodos en la rama inferior, defina los bornes inferiores con `.ports` y use esos nodos en la netlist:
+El esquema grafico siempre muestra los bornes como `1`, `1'`, `2` y `2'`.
+
+Si no se declara `.ports`, la netlist usa `P1=(1,0)` y `P2=(2,0)`: el nodo `0` es el retorno comun que el dibujo rotula como `1'` y `2'`.
+
+Para dibujar nodos en la rama inferior con retornos independientes, defina los bornes inferiores con `.ports` y use esos nodos en la netlist:
 
 ```text
 .ports 1 0 2 b2

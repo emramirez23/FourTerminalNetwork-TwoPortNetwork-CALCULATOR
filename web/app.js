@@ -1,15 +1,11 @@
 import {
   DEFAULT_NETLIST,
   EXAMPLES,
-  associateTwoPorts,
-  buildPreview,
-  convertMatrix,
-  formatMatrix,
-  generateLatexReport,
-  generateReport,
-  parseMatrixText,
-  solveTwoPort,
-} from "./core.js?v=20260517-suffix-fixes";
+} from "./netlist.js?v=20260517-hero-controls-only";
+import { buildPreview } from "./core.js?v=20260517-hero-controls-only";
+import { associateTwoPorts, convertMatrix, parseMatrixText } from "./matrix.js?v=20260517-hero-controls-only";
+import { generateLatexReport, generateReport } from "./reports.js?v=20260517-hero-controls-only";
+import { solveTwoPort } from "./solver.js?v=20260517-hero-controls-only";
 
 const state = {
   preview: null,
@@ -39,17 +35,17 @@ const controls = {
   conversionOutput: $("conversionOutput"),
   associationOutput: $("associationOutput"),
   exportOutput: $("exportOutput"),
-  exampleSelect: $("exampleSelect"),
+  exampleButtons: $("exampleButtons"),
   matrixSource: $("matrixSource"),
   matrixTarget: $("matrixTarget"),
-  matrixInput: $("matrixInput"),
+  matrixInputFields: matrixFields("matrixInput"),
+  matrixInputLabelNodes: Array.from(document.querySelectorAll("[data-matrix-source-label]")),
   assocType: $("assocType"),
-  assocA: $("assocA"),
-  assocB: $("assocB"),
+  assocAFields: matrixFields("assocA"),
+  assocBFields: matrixFields("assocB"),
   brune1: $("brune1"),
   brune2: $("brune2"),
   builderValue: $("builderValue"),
-  statusBadge: $("statusBadge"),
   themeToggleBtn: $("themeToggleBtn"),
   languageToggleBtn: $("languageToggleBtn"),
 };
@@ -58,16 +54,18 @@ const TEXT = {
   es: {
     "meta.title": "Simulador de Cuadripolos UTN",
     "hero.eyebrow": "Teoria de Circuitos II - UTN",
-    "hero.title": "Simulador educativo de cuadripolos",
+    "hero.title": "Simulador de cuadripolos",
     "hero.lead": "Dibuja la netlist en vivo, calcula parametros Z/Y, convierte familias, asocia cuadripolos y genera una resolucion tipo apunte.",
-    "hero.cardText": "Version web estatica lista para Netlify",
+    "hero.author": "BY ELÍAS RAMÍREZ",
     "prefs.darkMode": "Modo oscuro",
     "prefs.lightMode": "Modo claro",
     "prefs.languageSwitch": "ENGLISH",
     "prefs.themeAria": "Cambiar tema",
     "prefs.languageAria": "Cambiar idioma",
     "sections.inputTag": "Entrada",
-    "sections.netlistTitle": "Netlist viva",
+    "sections.netlistTitle": "Netlist",
+    "netlistNote.title": "Convencion fija de bornes",
+    "netlistNote.body": "El diagrama siempre muestra 1, 1', 2 y 2'. Si no declaras .ports, la netlist usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun dibujado como 1' y 2'. Para retornos independientes usa .ports 1 1' 2 2'.",
     "sections.previewTitle": "Esquema ingenieril",
     "sections.solveTitle": "Resolver matrices",
     "sections.conversionTitle": "Conversion de matrices",
@@ -76,7 +74,6 @@ const TEXT = {
     "sections.auditTag": "Auditoria",
     "sections.auditTitle": "Markdown tecnico del esquema",
     "actions.examples": "Ejemplos",
-    "actions.load": "Cargar",
     "actions.clear": "Limpiar",
     "actions.solve": "Resolver",
     "actions.convert": "Convertir",
@@ -95,14 +92,12 @@ const TEXT = {
     "builder.title": "Constructor rapido",
     "builder.description": "Primera version de editor grafico: agrega ramas tipicas del apunte y actualiza el esquema.",
     "builder.value": "Valor",
+    "builder.quickBranches": "Ramas rapidas",
+    "builder.typicalTopologies": "Topologias tipicas",
     "builder.series": "Serie 1-2",
     "builder.inputShunt": "Derivacion entrada",
     "builder.middleShunt": "Derivacion nodo medio",
     "builder.outputShunt": "Derivacion salida",
-    "builder.insertT": "Insertar T",
-    "builder.insertPi": "Insertar pi",
-    "builder.lowerRail": "Rama inferior",
-    "builder.ladder": "Escalera",
     "examples.escalera": "Escalera resistiva del apunte",
     "examples.t": "Cuadripolo T",
     "examples.pi": "Cuadripolo pi",
@@ -129,7 +124,13 @@ const TEXT = {
     "matrix.z": "Matriz Z",
     "matrix.y": "Matriz Y",
     "matrix.prefix": "Matriz",
+    "matrix.converted": "Matriz",
     "matrix.resultingTwoPort": "Cuadripolo resultante",
+    "matrix.impedance": "Impedancia",
+    "matrix.admittance": "Admitancia",
+    "matrix.hybrid": "Hibrida",
+    "matrix.inverseHybrid": "Hibrida inversa",
+    "matrix.transmission": "Transmision / ABCD",
     "states.verified": "verificada",
     "states.notVerified": "no verificada",
     "states.reciprocityZ": "Reciprocidad Z: {state}",
@@ -144,16 +145,18 @@ const TEXT = {
   en: {
     "meta.title": "UTN Two-Port Network Simulator",
     "hero.eyebrow": "Circuit Theory II - UTN",
-    "hero.title": "Educational two-port simulator",
+    "hero.title": "Two-port network simulator",
     "hero.lead": "Draw the live netlist, calculate Z/Y parameters, convert matrix families, associate two-ports, and generate a study-note style solution.",
-    "hero.cardText": "Static web version ready for Netlify",
+    "hero.author": "BY ELÍAS RAMÍREZ",
     "prefs.darkMode": "Dark mode",
     "prefs.lightMode": "Light mode",
     "prefs.languageSwitch": "ESPAÑOL",
     "prefs.themeAria": "Toggle theme",
     "prefs.languageAria": "Toggle language",
     "sections.inputTag": "Input",
-    "sections.netlistTitle": "Live netlist",
+    "sections.netlistTitle": "Netlist",
+    "netlistNote.title": "Fixed terminal convention",
+    "netlistNote.body": "The diagram always shows 1, 1', 2, and 2'. If .ports is omitted, the netlist uses P1=(1,0) and P2=(2,0): node 0 is the common return drawn as 1' and 2'. For independent returns use .ports 1 1' 2 2'.",
     "sections.previewTitle": "Engineering schematic",
     "sections.solveTitle": "Solve matrices",
     "sections.conversionTitle": "Matrix conversion",
@@ -162,7 +165,6 @@ const TEXT = {
     "sections.auditTag": "Audit",
     "sections.auditTitle": "Technical schematic Markdown",
     "actions.examples": "Examples",
-    "actions.load": "Load",
     "actions.clear": "Clear",
     "actions.solve": "Solve",
     "actions.convert": "Convert",
@@ -181,14 +183,12 @@ const TEXT = {
     "builder.title": "Quick builder",
     "builder.description": "First graphic-editor version: add common study-note branches and update the schematic.",
     "builder.value": "Value",
+    "builder.quickBranches": "Quick branches",
+    "builder.typicalTopologies": "Typical topologies",
     "builder.series": "Series 1-2",
     "builder.inputShunt": "Input shunt",
     "builder.middleShunt": "Middle-node shunt",
     "builder.outputShunt": "Output shunt",
-    "builder.insertT": "Insert T",
-    "builder.insertPi": "Insert pi",
-    "builder.lowerRail": "Lower rail",
-    "builder.ladder": "Ladder",
     "examples.escalera": "Study-note resistive ladder",
     "examples.t": "T two-port",
     "examples.pi": "Pi two-port",
@@ -215,7 +215,13 @@ const TEXT = {
     "matrix.z": "Z matrix",
     "matrix.y": "Y matrix",
     "matrix.prefix": "Matrix",
+    "matrix.converted": "Matrix",
     "matrix.resultingTwoPort": "Resulting two-port",
+    "matrix.impedance": "Impedance",
+    "matrix.admittance": "Admittance",
+    "matrix.hybrid": "Hybrid",
+    "matrix.inverseHybrid": "Inverse hybrid",
+    "matrix.transmission": "Transmission / ABCD",
     "states.verified": "verified",
     "states.notVerified": "not verified",
     "states.reciprocityZ": "Z reciprocity: {state}",
@@ -233,12 +239,12 @@ boot();
 
 function boot() {
   applyTheme();
-  hydrateExamples();
+  hydrateExampleButtons();
   applyLanguage();
   controls.netlist.value = loadInitialNetlist();
-  controls.matrixInput.value = "55.454545 7.272727; 7.272727 26.363636";
-  controls.assocA.value = "1 40; 0 1";
-  controls.assocB.value = "1 30; 0.02 1";
+  setMatrixFields(controls.matrixInputFields, [[55.454545, 7.272727], [7.272727, 26.363636]]);
+  setMatrixFields(controls.assocAFields, [[1, 40], [0, 1]]);
+  setMatrixFields(controls.assocBFields, [[1, 30], [0.02, 1]]);
 
   controls.netlist.addEventListener("input", debounce(refreshPreview, 120));
   controls.themeToggleBtn.addEventListener("click", toggleTheme);
@@ -246,6 +252,7 @@ function boot() {
   $("solveBtn").addEventListener("click", runSolve);
   $("convertBtn").addEventListener("click", runConversion);
   $("associateBtn").addEventListener("click", runAssociation);
+  controls.matrixSource.addEventListener("change", updateConversionMatrixInputNotation);
   $("reportBtn").addEventListener("click", showMarkdownReport);
   $("latexBtn").addEventListener("click", showLatexReport);
   $("jsonBtn").addEventListener("click", downloadJson);
@@ -259,21 +266,12 @@ function boot() {
     controls.solveOutput.innerHTML = emptyMessage(t("messages.solveEmpty"));
     refreshPreview();
   });
-  $("loadExampleBtn").addEventListener("click", () => {
-    const example = EXAMPLES[controls.exampleSelect.value];
-    if (!example) return;
-    controls.netlist.value = example.netlist;
-    refreshPreview();
-  });
   $("addSeriesBtn").addEventListener("click", () => appendComponent("series"));
   $("addInputShuntBtn").addEventListener("click", () => appendComponent("inputShunt"));
   $("addMiddleShuntBtn").addEventListener("click", () => appendComponent("middleShunt"));
   $("addOutputShuntBtn").addEventListener("click", () => appendComponent("outputShunt"));
-  $("insertTBtn").addEventListener("click", () => replaceNetlist(EXAMPLES.t.netlist));
-  $("insertPiBtn").addEventListener("click", () => replaceNetlist(EXAMPLES.pi.netlist));
-  $("insertLowerBtn").addEventListener("click", () => replaceNetlist(EXAMPLES.inferior.netlist));
-  $("insertLadderBtn").addEventListener("click", () => replaceNetlist(DEFAULT_NETLIST));
   enableSchematicPan();
+  updateConversionMatrixInputNotation();
 
   refreshPreview();
   runSolve();
@@ -320,18 +318,17 @@ function applyLanguage() {
   });
 
   applyTheme();
-  updateExampleLabels();
+  updateExampleButtonLabels();
   updateAssociationOptions();
   controls.languageToggleBtn.textContent = t("prefs.languageSwitch");
   controls.languageToggleBtn.setAttribute("aria-label", t("prefs.languageAria"));
   controls.languageToggleBtn.setAttribute("aria-pressed", String(ui.language === "en"));
 
-  updateStatusFromPreview();
 }
 
-function updateExampleLabels() {
-  for (const option of controls.exampleSelect.options) {
-    option.textContent = exampleLabel(option.value);
+function updateExampleButtonLabels() {
+  for (const button of controls.exampleButtons.querySelectorAll("[data-example-key]")) {
+    button.textContent = exampleLabel(button.dataset.exampleKey);
   }
 }
 
@@ -405,13 +402,16 @@ function enableSchematicPan() {
   });
 }
 
-function hydrateExamples() {
-  controls.exampleSelect.replaceChildren();
+function hydrateExampleButtons() {
+  controls.exampleButtons.replaceChildren();
   for (const [key, example] of Object.entries(EXAMPLES)) {
-    const option = document.createElement("option");
-    option.value = key;
-    option.textContent = exampleLabel(key, example);
-    controls.exampleSelect.appendChild(option);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "secondary";
+    button.dataset.exampleKey = key;
+    button.textContent = exampleLabel(key, example);
+    button.addEventListener("click", () => replaceNetlist(example.netlist));
+    controls.exampleButtons.appendChild(button);
   }
 }
 
@@ -423,8 +423,6 @@ function loadInitialNetlist() {
   const params = new URLSearchParams(window.location.search);
   const requestedNetlist = params.get("netlist");
   if (!requestedNetlist) return DEFAULT_NETLIST;
-  const matchingExample = Object.entries(EXAMPLES).find(([, example]) => example.netlist === requestedNetlist);
-  if (matchingExample) controls.exampleSelect.value = matchingExample[0];
   return requestedNetlist;
 }
 
@@ -437,20 +435,10 @@ function refreshPreview() {
     controls.warnings.innerHTML = preview.warnings.length
       ? preview.warnings.map((warning) => `<p>${escapeHtml(warning)}</p>`).join("")
       : `<p>${escapeHtml(t("messages.noWarnings"))}</p>`;
-    updateStatusFromPreview();
   } catch (error) {
     controls.schematic.innerHTML = emptyMessage(error.message);
     controls.warnings.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
-    controls.statusBadge.textContent = t("status.error");
   }
-}
-
-function updateStatusFromPreview() {
-  if (!state.preview) {
-    controls.statusBadge.textContent = t("status.ready");
-    return;
-  }
-  controls.statusBadge.textContent = t("status.components", { count: state.preview.components.length });
 }
 
 function runSolve() {
@@ -458,9 +446,7 @@ function runSolve() {
     const solution = solveTwoPort(controls.netlist.value);
     state.solution = solution;
     controls.solveOutput.innerHTML = [
-      matrixCard(t("matrix.z"), solution.z, "ohm"),
-      matrixCard(t("matrix.y"), solution.y, "S"),
-      derivedFamiliesHtml(solution.derivedFamilies),
+      solveMatricesGallery(solution),
       `<div class="result-grid">
         <span class="${solution.reciprocalZ ? "ok" : "warn"}">${escapeHtml(t("states.reciprocityZ", { state: t(solution.reciprocalZ ? "states.verified" : "states.notVerified") }))}</span>
         <span class="${solution.symmetricZ ? "ok" : "warn"}">${escapeHtml(t("states.symmetryZ", { state: t(solution.symmetricZ ? "states.verified" : "states.notVerified") }))}</span>
@@ -477,11 +463,15 @@ function runSolve() {
 
 function runConversion() {
   try {
-    const matrix = parseMatrixText(controls.matrixInput.value);
+    const matrix = readMatrixFields(controls.matrixInputFields);
     const conversion = convertMatrix(controls.matrixSource.value, controls.matrixTarget.value, matrix);
     state.conversion = conversion;
     controls.conversionOutput.innerHTML = [
-      matrixCard(`${conversion.source} -> ${conversion.target}`, conversion.result),
+      matrixCard({
+        title: `${t("matrix.converted")} ${conversion.source} -> ${conversion.target}`,
+        symbol: conversion.target,
+        matrix: conversion.result,
+      }),
       conditionsHtml(conversion.conditions),
       `<div class="steps">${conversion.steps.map((step) => `<p>${escapeHtml(step)}</p>`).join("")}</div>`,
     ].join("");
@@ -494,14 +484,18 @@ function runConversion() {
 
 function runAssociation() {
   try {
-    const matrixA = parseMatrixText(controls.assocA.value);
-    const matrixB = parseMatrixText(controls.assocB.value);
+    const matrixA = readMatrixFields(controls.assocAFields);
+    const matrixB = readMatrixFields(controls.assocBFields);
     const association = associateTwoPorts(controls.assocType.value, matrixA, matrixB, [controls.brune1.value, controls.brune2.value]);
     state.association = association;
     const label = associationLabel(controls.assocType.value, association.label);
     controls.associationOutput.innerHTML = [
       `<p>${escapeHtml(t("association.using", { label, family: association.family }))}</p>`,
-      matrixCard(t("matrix.resultingTwoPort"), association.result),
+      matrixCard({
+        title: t("matrix.resultingTwoPort"),
+        symbol: association.family,
+        matrix: association.result,
+      }),
       `<p class="${association.brune.valid === false ? "warn" : association.brune.valid === true ? "ok" : "note"}">${escapeHtml(bruneMessage(association.brune))}</p>`,
       `<div class="steps">${association.steps.map((step) => `<p>${escapeHtml(step)}</p>`).join("")}</div>`,
     ].join("");
@@ -592,30 +586,112 @@ function nextComponentId() {
   return `R${max + 1}`;
 }
 
-function matrixCard(title, matrix, unit = "") {
+function matrixFields(prefix) {
+  return [
+    $(`${prefix}11`),
+    $(`${prefix}12`),
+    $(`${prefix}21`),
+    $(`${prefix}22`),
+  ];
+}
+
+function setMatrixFields(fields, matrix) {
+  const values = [matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1]];
+  fields.forEach((field, index) => {
+    if (!field) return;
+    field.value = String(values[index]);
+  });
+}
+
+function readMatrixFields(fields) {
+  const values = fields.map((field) => field?.value?.trim() ?? "");
+  return parseMatrixText(`${values[0]} ${values[1]}; ${values[2]} ${values[3]}`);
+}
+
+function updateConversionMatrixInputNotation() {
+  const family = controls.matrixSource.value || "Z";
+  const symbol = matrixInputSymbol(family);
+  const spoken = matrixInputSpokenFamily(family);
+  controls.matrixInputLabelNodes.forEach((node) => {
+    const index = node.dataset.matrixSourceLabel;
+    node.innerHTML = `<span class="matrix-index-glyph">${escapeHtml(symbol)}</span><span class="matrix-index-sub">${escapeHtml(index)}</span>`;
+  });
+  controls.matrixInputFields.forEach((field, index) => {
+    const suffix = ["11", "12", "21", "22"][index];
+    field.setAttribute("aria-label", `${spoken} ${suffix}`);
+  });
+}
+
+function matrixInputSymbol(family) {
+  const map = {
+    Z: "Z",
+    Y: "Y",
+    h: "h",
+    g: "g",
+    Gamma: "Γ",
+  };
+  return map[family] || family;
+}
+
+function matrixInputSpokenFamily(family) {
+  const map = {
+    Z: "Coeficiente Z",
+    Y: "Coeficiente Y",
+    h: "Coeficiente h",
+    g: "Coeficiente g",
+    Gamma: "Coeficiente Gamma",
+  };
+  return map[family] || "Coeficiente";
+}
+
+function matrixCard({ title, symbol, matrix }) {
   return `<div class="matrix-card">
     <h4>${escapeHtml(title)}</h4>
-    <div class="matrix">
-      <span>${escapeHtml(formatNumberCell(matrix[0][0]))}</span>
-      <span>${escapeHtml(formatNumberCell(matrix[0][1]))}</span>
-      <span>${escapeHtml(formatNumberCell(matrix[1][0]))}</span>
-      <span>${escapeHtml(formatNumberCell(matrix[1][1]))}</span>
+    <div class="matrix-equation">
+      <span class="matrix-symbol" aria-label="Simbolo de matriz ${escapeHtml(symbol)}">
+        <span class="matrix-bar" aria-hidden="true">|</span>
+        <span class="matrix-name">${escapeHtml(symbol)}</span>
+        <span class="matrix-bar" aria-hidden="true">|</span>
+        <span class="matrix-equals" aria-hidden="true">=</span>
+      </span>
+      <div class="matrix">
+        <span>${escapeHtml(formatNumberCell(matrix[0][0]))}</span>
+        <span>${escapeHtml(formatNumberCell(matrix[0][1]))}</span>
+        <span>${escapeHtml(formatNumberCell(matrix[1][0]))}</span>
+        <span>${escapeHtml(formatNumberCell(matrix[1][1]))}</span>
+      </div>
     </div>
-    <code>${escapeHtml(formatMatrix(matrix, unit))}</code>
   </div>`;
+}
+
+function solveMatricesGallery(solution) {
+  const cards = [
+    matrixCard({ title: `${t("matrix.z")} (${t("matrix.impedance")})`, symbol: "Z", matrix: solution.z }),
+    matrixCard({ title: `${t("matrix.y")} (${t("matrix.admittance")})`, symbol: "Y", matrix: solution.y }),
+    ...derivedFamiliesCards(solution.derivedFamilies),
+  ];
+  return `<div class="matrix-gallery matrix-gallery--solve">${cards.join("")}</div>`;
 }
 
 function derivedFamiliesHtml(derivedFamilies = []) {
   if (!derivedFamilies.length) return "";
-  return `<div class="derived-grid">${derivedFamilies.map((family) => {
+  return `<div class="matrix-gallery">${derivedFamiliesCards(derivedFamilies).join("")}</div>`;
+}
+
+function derivedFamiliesCards(derivedFamilies = []) {
+  return derivedFamilies.map((family) => {
     if (family.status === "ok") {
-      return matrixCard(`${t("matrix.prefix")} ${family.label}`, family.matrix, family.unit);
+      return matrixCard({
+        title: `${t("matrix.prefix")} ${family.label} (${matrixFamilyName(family.target)})`,
+        symbol: family.target,
+        matrix: family.matrix,
+      });
     }
     return `<div class="matrix-card warn-box">
       <h4>${escapeHtml(t("matrix.prefix"))} ${escapeHtml(family.label)}</h4>
       <p>${escapeHtml(family.message)}</p>
     </div>`;
-  }).join("")}</div>`;
+  });
 }
 
 function stepsHtml(steps) {
@@ -657,6 +733,17 @@ function formatNumberCell(value) {
   if (Math.abs(value) < 1e-10) return "0";
   if (Math.abs(value - Math.round(value)) < 1e-9) return String(Math.round(value));
   return Number(value.toFixed(5)).toString();
+}
+
+function matrixFamilyName(family) {
+  const names = {
+    Z: t("matrix.impedance"),
+    Y: t("matrix.admittance"),
+    h: t("matrix.hybrid"),
+    g: t("matrix.inverseHybrid"),
+    Gamma: t("matrix.transmission"),
+  };
+  return names[family] || family;
 }
 
 function escapeHtml(value) {
