@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador de Cuadripolos UTN</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js?v=20260516-theme-i18n"></script>
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow" data-i18n="hero.eyebrow">Teoria de Circuitos II - UTN</p>
+      <h1 data-i18n="hero.title">Simulador educativo de cuadripolos</h1>
+      <p class="lead" data-i18n="hero.lead">Dibuja la netlist en vivo, calcula parametros Z/Y, convierte familias, asocia cuadripolos y genera una resolucion tipo apunte.</p>
+    </div>
+    <div class="hero-card">
+      <span id="statusBadge">Listo</span>
+      <strong>MVP1 + MVP2 + base MVP3-5</strong>
+      <small data-i18n="hero.cardText">Version web estatica lista para Netlify</small>
+      <div class="preference-actions" aria-label="Preferencias">
+        <button id="themeToggleBtn" class="secondary compact" type="button" aria-pressed="false"></button>
+        <button id="languageToggleBtn" class="secondary compact" type="button" aria-pressed="false"></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="panel editor-panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag" data-i18n="sections.inputTag">Entrada</span>
+          <h2 data-i18n="sections.netlistTitle">Netlist viva</h2>
+        </div>
+        <div class="inline-actions">
+          <select id="exampleSelect" aria-label="Ejemplos" data-i18n-aria-label="actions.examples"></select>
+          <button id="loadExampleBtn" type="button" data-i18n="actions.load">Cargar</button>
+          <button id="clearBtn" class="secondary" type="button" data-i18n="actions.clear">Limpiar</button>
+        </div>
+      </div>
+      <textarea id="netlist" spellcheck="false" aria-label="Netlist" data-i18n-aria-label="fields.netlist"></textarea>
+
+      <div class="builder">
+        <div>
+          <span class="tag">MVP4</span>
+          <h3 data-i18n="builder.title">Constructor rapido</h3>
+          <p data-i18n="builder.description">Primera version de editor grafico: agrega ramas tipicas del apunte y actualiza el esquema.</p>
+        </div>
+        <label><span data-i18n="builder.value">Valor</span>
+          <input id="builderValue" value="50" inputmode="decimal">
+        </label>
+        <div class="builder-actions">
+          <button id="addSeriesBtn" type="button" data-i18n="builder.series">Serie 1-2</button>
+          <button id="addInputShuntBtn" type="button" data-i18n="builder.inputShunt">Derivacion entrada</button>
+          <button id="addMiddleShuntBtn" type="button" data-i18n="builder.middleShunt">Derivacion nodo medio</button>
+          <button id="addOutputShuntBtn" type="button" data-i18n="builder.outputShunt">Derivacion salida</button>
+          <button id="insertTBtn" class="secondary" type="button" data-i18n="builder.insertT">Insertar T</button>
+          <button id="insertPiBtn" class="secondary" type="button" data-i18n="builder.insertPi">Insertar pi</button>
+          <button id="insertLowerBtn" class="secondary" type="button" data-i18n="builder.lowerRail">Rama inferior</button>
+          <button id="insertLadderBtn" class="secondary" type="button" data-i18n="builder.ladder">Escalera</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel schematic-panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag">Preview</span>
+          <h2 data-i18n="sections.previewTitle">Esquema ingenieril</h2>
+        </div>
+      </div>
+      <div id="schematic" class="schematic"></div>
+      <div id="warnings" class="warnings"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag">MVP1</span>
+          <h2 data-i18n="sections.solveTitle">Resolver matrices</h2>
+        </div>
+        <button id="solveBtn" type="button" data-i18n="actions.solve">Resolver</button>
+      </div>
+      <div id="solveOutput" class="output"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag">MVP2</span>
+          <h2 data-i18n="sections.conversionTitle">Conversion de matrices</h2>
+        </div>
+        <button id="convertBtn" type="button" data-i18n="actions.convert">Convertir</button>
+      </div>
+      <div class="form-grid">
+        <label><span data-i18n="fields.source">Origen</span>
+          <select id="matrixSource">
+            <option>Z</option>
+            <option>Y</option>
+            <option>h</option>
+            <option>g</option>
+            <option>Gamma</option>
+          </select>
+        </label>
+        <label><span data-i18n="fields.target">Destino</span>
+          <select id="matrixTarget">
+            <option>Y</option>
+            <option>Z</option>
+            <option>h</option>
+            <option>g</option>
+            <option>Gamma</option>
+          </select>
+        </label>
+      </div>
+      <label class="wide-label"><span data-i18n="fields.matrix2x2">Matriz 2x2</span>
+        <textarea id="matrixInput" class="small-textarea" spellcheck="false"></textarea>
+      </label>
+      <div id="conversionOutput" class="output"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag">MVP3</span>
+          <h2 data-i18n="sections.associationTitle">Asociar cuadripolos</h2>
+        </div>
+        <button id="associateBtn" type="button" data-i18n="actions.associate">Asociar</button>
+      </div>
+      <label><span data-i18n="fields.assocType">Tipo de asociacion</span>
+        <select id="assocType">
+          <option value="cascade"></option>
+          <option value="seriesSeries"></option>
+          <option value="parallelParallel"></option>
+          <option value="seriesParallel"></option>
+          <option value="parallelSeries"></option>
+        </select>
+      </label>
+      <div class="form-grid">
+        <label><span data-i18n="fields.twoPortA">Cuadripolo A</span>
+          <textarea id="assocA" class="small-textarea" spellcheck="false"></textarea>
+        </label>
+        <label><span data-i18n="fields.twoPortB">Cuadripolo B</span>
+          <textarea id="assocB" class="small-textarea" spellcheck="false"></textarea>
+        </label>
+      </div>
+      <div class="form-grid brune">
+        <label><span data-i18n="fields.brune1">Brune ensayo 1</span>
+          <input id="brune1" placeholder="0 si no interfiere" data-i18n-placeholder="fields.brunePlaceholder">
+        </label>
+        <label><span data-i18n="fields.brune2">Brune ensayo 2</span>
+          <input id="brune2" placeholder="0 si no interfiere" data-i18n-placeholder="fields.brunePlaceholder">
+        </label>
+      </div>
+      <div id="associationOutput" class="output"></div>
+    </section>
+
+    <section class="panel export-panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag">MVP5</span>
+          <h2 data-i18n="sections.exportTitle">Explicacion y exportacion</h2>
+        </div>
+        <div class="inline-actions">
+          <button id="reportBtn" type="button">Markdown</button>
+          <button id="latexBtn" class="secondary" type="button">LaTeX</button>
+          <button id="jsonBtn" class="secondary" type="button">JSON</button>
+          <button id="printBtn" class="secondary" type="button">PDF</button>
+        </div>
+      </div>
+      <textarea id="exportOutput" class="report" spellcheck="false"></textarea>
+      <div class="inline-actions footer-actions">
+        <button id="copyReportBtn" type="button" data-i18n="actions.copyReport">Copiar reporte</button>
+      </div>
+    </section>
+
+    <section class="panel markdown-panel">
+      <div class="panel-title">
+        <div>
+          <span class="tag" data-i18n="sections.auditTag">Auditoria</span>
+          <h2 data-i18n="sections.auditTitle">Markdown tecnico del esquema</h2>
+        </div>
+      </div>
+      <textarea id="markdown" class="report" spellcheck="false"></textarea>
+    </section>
+  </main>
+</body>
+</html>

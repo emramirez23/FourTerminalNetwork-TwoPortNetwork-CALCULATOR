@@ -1,0 +1,8 @@
+.netlify/
+.netlify-cli-tmp/
+.pytest_cache/
+.venv/
+artifacts/
+node_modules/
+__pycache__/
+*.pyc
