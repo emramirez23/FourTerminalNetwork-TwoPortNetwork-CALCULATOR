@@ -5,7 +5,7 @@ $projectRoot = if ($PSCommandPath) { Split-Path -Parent $PSCommandPath } else { 
 $webRoot = Join-Path $projectRoot "web"
 $artifactRoot = Join-Path $projectRoot "artifacts\local_server"
 $preferredPort = 8888
-$assetVersion = "20260517-hero-controls-only"
+$assetVersion = "20260517-mvp2-mvp3-zero"
 $pythonCommand = $null
 
 function Get-PythonCommand {

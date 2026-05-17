@@ -1,4 +1,4 @@
-import { parseScalar } from "./math-utils.js?v=20260517-hero-controls-only";
+import { parseScalar } from "./math-utils.js?v=20260517-acentos-ui";
 
 export const DEFAULT_NETLIST = [
   "R1 1 n1 30",
@@ -26,7 +26,7 @@ export const EXAMPLES = {
     netlist: "R1 1 2 60",
   },
   derivacion: {
-    label: "Impedancia en derivacion Zp",
+    label: "Impedancia en derivación Zp",
     netlist: "R1 1 0 45",
   },
   dobleParalelo: {
@@ -63,7 +63,7 @@ export function parseNetlist(text) {
 
     if (directive === ".port") {
       if (tokens.length < 4) {
-        warnings.push(`Linea ${lineNumber}: .port incompleto. Use .port P1 nodo+ nodo-.`);
+        warnings.push(`Línea ${lineNumber}: .port incompleto. Use .port P1 nodo+ nodo-.`);
         return;
       }
       const portId = tokens[1].toUpperCase();
@@ -72,14 +72,14 @@ export function parseNetlist(text) {
       } else if (portId === "P2") {
         ports.p2 = { ...ports.p2, positive: tokens[2], negative: tokens[3] };
       } else {
-        warnings.push(`Linea ${lineNumber}: puerto desconocido ${tokens[1]}.`);
+        warnings.push(`Línea ${lineNumber}: puerto desconocido ${tokens[1]}.`);
       }
       return;
     }
 
     if (directive === ".ports") {
       if (tokens.length < 5) {
-        warnings.push(`Linea ${lineNumber}: .ports incompleto. Use .ports p1+ p1- p2+ p2-.`);
+        warnings.push(`Línea ${lineNumber}: .ports incompleto. Use .ports p1+ p1- p2+ p2-.`);
         return;
       }
       ports.p1 = { ...ports.p1, positive: tokens[1], negative: tokens[2] };
@@ -88,24 +88,24 @@ export function parseNetlist(text) {
     }
 
     if (tokens.length < 4) {
-      warnings.push(`Linea ${lineNumber}: componente incompleto. Formato: R1 nodoA nodoB valor.`);
+      warnings.push(`Línea ${lineNumber}: componente incompleto. Formato: R1 nodoA nodoB valor.`);
       return;
     }
 
     const [id, nodeA, nodeB, rawValue] = tokens;
     const kind = id[0]?.toUpperCase();
     if (!SUPPORTED_COMPONENTS.has(kind)) {
-      warnings.push(`Linea ${lineNumber}: tipo ${kind || "?"} no soportado. Use R, Z, Y, L o C.`);
+      warnings.push(`Línea ${lineNumber}: tipo ${kind || "?"} no soportado. Use R, Z, Y, L o C.`);
       return;
     }
     if (tokens.length > 4) {
-      warnings.push(`Linea ${lineNumber}: se ignoran tokens extra: ${tokens.slice(4).join(" ")}.`);
+      warnings.push(`Línea ${lineNumber}: se ignoran tokens extra: ${tokens.slice(4).join(" ")}.`);
     }
     if (usedIds.has(id.toUpperCase())) {
-      warnings.push(`Linea ${lineNumber}: el identificador ${id} esta repetido.`);
+      warnings.push(`Línea ${lineNumber}: el identificador ${id} está repetido.`);
     }
     if (nodeA === nodeB) {
-      warnings.push(`Linea ${lineNumber}: ${id} conecta el mismo nodo en ambos extremos.`);
+      warnings.push(`Línea ${lineNumber}: ${id} conecta el mismo nodo en ambos extremos.`);
     }
 
     usedIds.add(id.toUpperCase());
@@ -125,7 +125,7 @@ export function parseNetlist(text) {
   const availableNodes = new Set(components.flatMap((component) => [component.nodeA, component.nodeB]));
   for (const node of portNodes) {
     if (!isGround(node) && components.length > 0 && !availableNodes.has(node)) {
-      warnings.push(`El borne ${node} no aparece conectado a ningun componente.`);
+      warnings.push(`El borne ${node} no aparece conectado a ningún componente.`);
     }
   }
 

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulador de Cuadripolos UTN</title>
-  <link rel="stylesheet" href="./styles.css?v=20260517-hero-controls-only">
-  <script type="module" src="./app.js?v=20260517-hero-controls-only"></script>
+  <link rel="stylesheet" href="./styles.css?v=20260517-mvp2-mvp3-zero">
+  <script type="module" src="./app.js?v=20260517-mvp2-mvp3-zero"></script>
 </head>
 <body>
   <header class="hero">
@@ -30,9 +30,9 @@
           </div>
         </div>
       </div>
-      <p class="eyebrow" data-i18n="hero.eyebrow">Teoria de Circuitos II - UTN</p>
+      <p class="eyebrow" data-i18n="hero.eyebrow">Teoría de Circuitos II - UTN</p>
       <h1 data-i18n="hero.title">Simulador de cuadripolos</h1>
-      <p class="lead" data-i18n="hero.lead">Dibuja la netlist en vivo, calcula parametros Z/Y, convierte familias, asocia cuadripolos y genera una resolucion tipo apunte.</p>
+      <p class="lead" data-i18n="hero.lead">Dibuja la netlist en vivo, calcula parámetros Z/Y, convierte familias, asocia cuadripolos y genera una resolución tipo apunte.</p>
     </div>
     <div class="hero-card hero-card--controls-only">
       <div class="preference-actions" aria-label="Preferencias">
@@ -54,8 +54,8 @@
         </div>
       </div>
       <div class="netlist-note">
-        <strong data-i18n="netlistNote.title">Convencion fija de bornes</strong>
-        <p data-i18n="netlistNote.body">El diagrama siempre muestra 1, 1', 2 y 2'. Si no declaras .ports, la netlist usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun dibujado como 1' y 2'. Para retornos independientes usa .ports 1 1' 2 2'.</p>
+        <strong data-i18n="netlistNote.title">Convención fija de bornes</strong>
+        <p data-i18n="netlistNote.body">El diagrama siempre muestra 1, 1', 2 y 2'. Si no declaras .ports, la netlist usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno común dibujado como 1' y 2'. Para retornos independientes usa .ports 1 1' 2 2'.</p>
       </div>
       <textarea id="netlist" spellcheck="false" aria-label="Netlist" data-i18n-aria-label="fields.netlist"></textarea>
     </section>
@@ -64,7 +64,7 @@
       <div class="panel-title">
         <div>
           <span class="tag">Preview</span>
-          <h2 data-i18n="sections.previewTitle">Esquema ingenieril</h2>
+          <h2 data-i18n="sections.previewTitle">Circuito esquemático</h2>
         </div>
       </div>
       <div id="schematic" class="schematic"></div>
@@ -86,26 +86,26 @@
       <div class="panel-title">
         <div>
           <span class="tag">MVP4</span>
-          <h2 data-i18n="builder.title">Constructor rapido</h2>
+          <h2 data-i18n="builder.title">Constructor rápido</h2>
         </div>
       </div>
       <div class="builder">
-        <p data-i18n="builder.description">Primera version de editor grafico: agrega ramas tipicas del apunte y actualiza el esquema.</p>
+        <p data-i18n="builder.description">Primera versión de editor gráfico: agrega ramas típicas del apunte y actualiza el esquema.</p>
         <label><span data-i18n="builder.value">Valor</span>
           <input id="builderValue" value="50" inputmode="decimal">
         </label>
         <div class="builder-group">
-          <strong data-i18n="builder.quickBranches">Ramas rapidas</strong>
+          <strong data-i18n="builder.quickBranches">Ramas rápidas</strong>
           <div class="builder-actions">
             <button id="addSeriesBtn" type="button" data-i18n="builder.series">Serie 1-2</button>
-            <button id="addInputShuntBtn" type="button" data-i18n="builder.inputShunt">Derivacion entrada</button>
-            <button id="addMiddleShuntBtn" type="button" data-i18n="builder.middleShunt">Derivacion nodo medio</button>
-            <button id="addOutputShuntBtn" type="button" data-i18n="builder.outputShunt">Derivacion salida</button>
+            <button id="addInputShuntBtn" type="button" data-i18n="builder.inputShunt">Derivación entrada</button>
+            <button id="addMiddleShuntBtn" type="button" data-i18n="builder.middleShunt">Derivación nodo medio</button>
+            <button id="addOutputShuntBtn" type="button" data-i18n="builder.outputShunt">Derivación salida</button>
           </div>
         </div>
         <div class="builder-group">
-          <strong data-i18n="builder.typicalTopologies">Topologias tipicas</strong>
-          <div id="exampleButtons" class="builder-actions topology-actions" aria-label="Topologias tipicas" data-i18n-aria-label="builder.typicalTopologies"></div>
+          <strong data-i18n="builder.typicalTopologies">Topologías típicas</strong>
+          <div id="exampleButtons" class="builder-actions topology-actions" aria-label="Topologías típicas" data-i18n-aria-label="builder.typicalTopologies"></div>
         </div>
       </div>
     </section>
@@ -114,7 +114,7 @@
       <div class="panel-title">
         <div>
           <span class="tag">MVP2</span>
-          <h2 data-i18n="sections.conversionTitle">Conversion de matrices</h2>
+          <h2 data-i18n="sections.conversionTitle">Conversión de matrices</h2>
         </div>
         <button id="convertBtn" type="button" data-i18n="actions.convert">Convertir</button>
       </div>
@@ -170,7 +170,7 @@
         </div>
         <button id="associateBtn" type="button" data-i18n="actions.associate">Asociar</button>
       </div>
-      <label><span data-i18n="fields.assocType">Tipo de asociacion</span>
+      <label><span data-i18n="fields.assocType">Tipo de asociación</span>
         <select id="assocType">
           <option value="cascade"></option>
           <option value="seriesSeries"></option>
@@ -214,7 +214,7 @@
       <div class="panel-title">
         <div>
           <span class="tag">MVP5</span>
-          <h2 data-i18n="sections.exportTitle">Explicacion y exportacion</h2>
+          <h2 data-i18n="sections.exportTitle">Explicación y exportación</h2>
         </div>
         <div class="inline-actions">
           <button id="reportBtn" type="button">Markdown</button>
@@ -232,8 +232,8 @@
     <section class="panel markdown-panel">
       <div class="panel-title">
         <div>
-          <span class="tag" data-i18n="sections.auditTag">Auditoria</span>
-          <h2 data-i18n="sections.auditTitle">Markdown tecnico del esquema</h2>
+          <span class="tag" data-i18n="sections.auditTag">Auditoría</span>
+          <h2 data-i18n="sections.auditTitle">Markdown técnico del esquema</h2>
         </div>
       </div>
       <textarea id="markdown" class="report" spellcheck="false"></textarea>

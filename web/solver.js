@@ -1,6 +1,6 @@
-import { convertMatrix, formatMatrix } from "./matrix.js?v=20260517-hero-controls-only";
-import { EPS, formatNumber, zeros } from "./math-utils.js?v=20260517-hero-controls-only";
-import { isGround, naturalCompare, parseNetlist } from "./netlist.js?v=20260517-hero-controls-only";
+import { convertMatrix, formatMatrix } from "./matrix.js?v=20260517-acentos-ui";
+import { EPS, formatNumber, zeros } from "./math-utils.js?v=20260517-acentos-ui";
+import { isGround, naturalCompare, parseNetlist } from "./netlist.js?v=20260517-acentos-ui";
 
 const ANALYSIS_COMPONENTS = new Set(["R", "Z", "Y"]);
 const AUTO_DERIVED_FAMILIES = [
@@ -14,11 +14,11 @@ export function solveTwoPort(text) {
   const warnings = [...parsed.warnings];
   const unsupported = parsed.components.filter((component) => !ANALYSIS_COMPONENTS.has(component.kind));
   if (unsupported.length > 0) {
-    warnings.push("El solucionador numerico del navegador calcula R/Z/Y. L y C quedan para el motor simbolico Python local.");
+    warnings.push("El solucionador numérico del navegador calcula R/Z/Y. L y C quedan para el motor simbólico Python local.");
   }
   for (const component of parsed.components) {
     if (ANALYSIS_COMPONENTS.has(component.kind) && !Number.isFinite(component.numeric)) {
-      throw new Error(`El componente ${component.id} necesita un valor numerico real para resolver en el navegador.`);
+      throw new Error(`El componente ${component.id} necesita un valor numérico real para resolver en el navegador.`);
     }
   }
 
@@ -39,18 +39,18 @@ export function solveTwoPort(text) {
 
   const steps = [
     {
-      title: "Parametros Z por definicion",
+      title: "Parámetros Z por definición",
       text: "Para obtener la primera columna se impone I1 = 1 A e I2 = 0 A, equivalente a dejar abierto el puerto 2. Para la segunda columna se impone I1 = 0 A e I2 = 1 A.",
       equations: [`Z = ${formatMatrix(z, "ohm")}`],
     },
     {
-      title: "Parametros Y por definicion",
+      title: "Parámetros Y por definición",
       text: "Para obtener la primera columna se impone V1 = 1 V y V2 = 0 V, es decir puerto 2 en cortocircuito. Para la segunda columna se impone V1 = 0 V y V2 = 1 V.",
       equations: [`Y = ${formatMatrix(y, "S")}`],
     },
     {
-      title: "Parametros derivados automaticos",
-      text: "Desde la matriz Z calculada se obtienen automaticamente las familias h, g y Gamma/ABCD cuando cumplen sus condiciones de existencia.",
+      title: "Parámetros derivados automáticos",
+      text: "Desde la matriz Z calculada se obtienen automáticamente las familias h, g y Gamma/ABCD cuando cumplen sus condiciones de existencia.",
       equations: derivedFamilies.map((family) => (
         family.status === "ok"
           ? `${family.label} = ${formatMatrix(family.matrix, family.unit)}`
@@ -58,8 +58,8 @@ export function solveTwoPort(text) {
       )),
     },
     {
-      title: "Verificacion didactica",
-      text: "Si z12 = z21 o y12 = y21, el cuadripolo pasivo bilateral queda verificado como reciproco dentro de la tolerancia numerica.",
+      title: "Verificación didáctica",
+      text: "Si z12 = z21 o y12 = y21, el cuadripolo pasivo bilateral queda verificado como recíproco dentro de la tolerancia numérica.",
       equations: [
         `z12 - z21 = ${formatNumber(z[0][1] - z[1][0])}`,
         `y12 - y21 = ${formatNumber(y[0][1] - y[1][0])}`,
@@ -185,7 +185,7 @@ function collectAnalysisNodes(parsed) {
 
 function componentConductance(component) {
   if (!Number.isFinite(component.numeric)) {
-    throw new Error(`${component.id} no tiene valor numerico real.`);
+    throw new Error(`${component.id} no tiene valor numérico real.`);
   }
   if (component.kind === "Y") return component.numeric;
   if (Math.abs(component.numeric) < EPS) throw new Error(`${component.id} tiene impedancia nula; la matriz nodal seria singular.`);

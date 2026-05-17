@@ -1,11 +1,11 @@
 import {
   DEFAULT_NETLIST,
   EXAMPLES,
-} from "./netlist.js?v=20260517-hero-controls-only";
-import { buildPreview } from "./core.js?v=20260517-hero-controls-only";
-import { associateTwoPorts, convertMatrix, parseMatrixText } from "./matrix.js?v=20260517-hero-controls-only";
-import { generateLatexReport, generateReport } from "./reports.js?v=20260517-hero-controls-only";
-import { solveTwoPort } from "./solver.js?v=20260517-hero-controls-only";
+} from "./netlist.js?v=20260517-acentos-ui";
+import { buildPreview } from "./core.js?v=20260517-acentos-ui";
+import { associateTwoPorts, convertMatrix, parseMatrixText } from "./matrix.js?v=20260517-acentos-ui";
+import { generateLatexReport, generateReport } from "./reports.js?v=20260517-acentos-ui";
+import { solveTwoPort } from "./solver.js?v=20260517-acentos-ui";
 
 const state = {
   preview: null,
@@ -53,9 +53,9 @@ const controls = {
 const TEXT = {
   es: {
     "meta.title": "Simulador de Cuadripolos UTN",
-    "hero.eyebrow": "Teoria de Circuitos II - UTN",
+    "hero.eyebrow": "Teoría de Circuitos II - UTN",
     "hero.title": "Simulador de cuadripolos",
-    "hero.lead": "Dibuja la netlist en vivo, calcula parametros Z/Y, convierte familias, asocia cuadripolos y genera una resolucion tipo apunte.",
+    "hero.lead": "Dibuja la netlist en vivo, calcula parámetros Z/Y, convierte familias, asocia cuadripolos y genera una resolución tipo apunte.",
     "hero.author": "BY ELÍAS RAMÍREZ",
     "prefs.darkMode": "Modo oscuro",
     "prefs.lightMode": "Modo claro",
@@ -64,15 +64,15 @@ const TEXT = {
     "prefs.languageAria": "Cambiar idioma",
     "sections.inputTag": "Entrada",
     "sections.netlistTitle": "Netlist",
-    "netlistNote.title": "Convencion fija de bornes",
-    "netlistNote.body": "El diagrama siempre muestra 1, 1', 2 y 2'. Si no declaras .ports, la netlist usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun dibujado como 1' y 2'. Para retornos independientes usa .ports 1 1' 2 2'.",
-    "sections.previewTitle": "Esquema ingenieril",
+    "netlistNote.title": "Convención fija de bornes",
+    "netlistNote.body": "El diagrama siempre muestra 1, 1', 2 y 2'. Si no declaras .ports, la netlist usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno común dibujado como 1' y 2'. Para retornos independientes usa .ports 1 1' 2 2'.",
+    "sections.previewTitle": "Circuito esquemático",
     "sections.solveTitle": "Resolver matrices",
-    "sections.conversionTitle": "Conversion de matrices",
+    "sections.conversionTitle": "Conversión de matrices",
     "sections.associationTitle": "Asociar cuadripolos",
-    "sections.exportTitle": "Explicacion y exportacion",
-    "sections.auditTag": "Auditoria",
-    "sections.auditTitle": "Markdown tecnico del esquema",
+    "sections.exportTitle": "Explicación y exportación",
+    "sections.auditTag": "Auditoría",
+    "sections.auditTitle": "Markdown técnico del esquema",
     "actions.examples": "Ejemplos",
     "actions.clear": "Limpiar",
     "actions.solve": "Resolver",
@@ -83,26 +83,26 @@ const TEXT = {
     "fields.source": "Origen",
     "fields.target": "Destino",
     "fields.matrix2x2": "Matriz 2x2",
-    "fields.assocType": "Tipo de asociacion",
+    "fields.assocType": "Tipo de asociación",
     "fields.twoPortA": "Cuadripolo A",
     "fields.twoPortB": "Cuadripolo B",
     "fields.brune1": "Brune ensayo 1",
     "fields.brune2": "Brune ensayo 2",
     "fields.brunePlaceholder": "0 si no interfiere",
-    "builder.title": "Constructor rapido",
-    "builder.description": "Primera version de editor grafico: agrega ramas tipicas del apunte y actualiza el esquema.",
+    "builder.title": "Constructor rápido",
+    "builder.description": "Primera versión de editor gráfico: agrega ramas típicas del apunte y actualiza el esquema.",
     "builder.value": "Valor",
-    "builder.quickBranches": "Ramas rapidas",
-    "builder.typicalTopologies": "Topologias tipicas",
+    "builder.quickBranches": "Ramas rápidas",
+    "builder.typicalTopologies": "Topologías típicas",
     "builder.series": "Serie 1-2",
-    "builder.inputShunt": "Derivacion entrada",
-    "builder.middleShunt": "Derivacion nodo medio",
-    "builder.outputShunt": "Derivacion salida",
+    "builder.inputShunt": "Derivación entrada",
+    "builder.middleShunt": "Derivación nodo medio",
+    "builder.outputShunt": "Derivación salida",
     "examples.escalera": "Escalera resistiva del apunte",
     "examples.t": "Cuadripolo T",
     "examples.pi": "Cuadripolo pi",
     "examples.serie": "Impedancia serie Zs",
-    "examples.derivacion": "Impedancia en derivacion Zp",
+    "examples.derivacion": "Impedancia en derivación Zp",
     "examples.dobleParalelo": "Dos derivaciones en paralelo",
     "examples.x": "Cuadripolo X / lattice",
     "examples.inferior": "Rama inferior con nodo b1",
@@ -121,6 +121,8 @@ const TEXT = {
     "status.components": "{count} componente(s)",
     "messages.noWarnings": "Sin advertencias.",
     "messages.solveEmpty": "Cargue una netlist y pulse Resolver.",
+    "messages.convertEmpty": "Inserte valores de las matrices y presione \"Convertir\".",
+    "messages.associateEmpty": "Inserte valores de las matrices y presione \"Asociar\".",
     "matrix.z": "Matriz Z",
     "matrix.y": "Matriz Y",
     "matrix.prefix": "Matriz",
@@ -128,19 +130,19 @@ const TEXT = {
     "matrix.resultingTwoPort": "Cuadripolo resultante",
     "matrix.impedance": "Impedancia",
     "matrix.admittance": "Admitancia",
-    "matrix.hybrid": "Hibrida",
-    "matrix.inverseHybrid": "Hibrida inversa",
-    "matrix.transmission": "Transmision / ABCD",
+    "matrix.hybrid": "Híbrida",
+    "matrix.inverseHybrid": "Híbrida inversa",
+    "matrix.transmission": "Transmisión / ABCD",
     "states.verified": "verificada",
     "states.notVerified": "no verificada",
     "states.reciprocityZ": "Reciprocidad Z: {state}",
-    "states.symmetryZ": "Simetria Z: {state}",
+    "states.symmetryZ": "Simetría Z: {state}",
     "conditions.title": "Condiciones de existencia",
-    "association.using": "{label} usando parametros {family}.",
-    "brune.pending": "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociacion estructural.",
-    "brune.incomplete": "Test de Brune incompleto: ambos ensayos deben tener una variable numerica.",
+    "association.using": "{label} usando parámetros {family}.",
+    "brune.pending": "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociación estructural.",
+    "brune.incomplete": "Test de Brune incompleto: ambos ensayos deben tener una variable numérica.",
     "brune.valid": "Test de Brune: las variables de interferencia son cero; la suma/producto indicado es admisible.",
-    "brune.invalid": "Test de Brune: alguna variable de interferencia no es cero; la asociacion modifica los cuadripolos individuales.",
+    "brune.invalid": "Test de Brune: alguna variable de interferencia no es cero; la asociación modifica los cuadripolos individuales.",
   },
   en: {
     "meta.title": "UTN Two-Port Network Simulator",
@@ -212,6 +214,8 @@ const TEXT = {
     "status.components": "{count} component(s)",
     "messages.noWarnings": "No warnings.",
     "messages.solveEmpty": "Load a netlist and press Solve.",
+    "messages.convertEmpty": "Enter matrix values and press \"Convert\".",
+    "messages.associateEmpty": "Enter matrix values and press \"Associate\".",
     "matrix.z": "Z matrix",
     "matrix.y": "Y matrix",
     "matrix.prefix": "Matrix",
@@ -242,9 +246,11 @@ function boot() {
   hydrateExampleButtons();
   applyLanguage();
   controls.netlist.value = loadInitialNetlist();
-  setMatrixFields(controls.matrixInputFields, [[55.454545, 7.272727], [7.272727, 26.363636]]);
-  setMatrixFields(controls.assocAFields, [[1, 40], [0, 1]]);
-  setMatrixFields(controls.assocBFields, [[1, 30], [0.02, 1]]);
+  setMatrixFields(controls.matrixInputFields, zeroMatrix());
+  setMatrixFields(controls.assocAFields, zeroMatrix());
+  setMatrixFields(controls.assocBFields, zeroMatrix());
+  controls.brune1.value = "0";
+  controls.brune2.value = "0";
 
   controls.netlist.addEventListener("input", debounce(refreshPreview, 120));
   controls.themeToggleBtn.addEventListener("click", toggleTheme);
@@ -264,6 +270,8 @@ function boot() {
     state.conversion = null;
     state.association = null;
     controls.solveOutput.innerHTML = emptyMessage(t("messages.solveEmpty"));
+    renderIdleConversionOutput();
+    renderIdleAssociationOutput();
     refreshPreview();
   });
   $("addSeriesBtn").addEventListener("click", () => appendComponent("series"));
@@ -275,8 +283,8 @@ function boot() {
 
   refreshPreview();
   runSolve();
-  runConversion();
-  runAssociation();
+  renderIdleConversionOutput();
+  renderIdleAssociationOutput();
 }
 
 function toggleTheme() {
@@ -291,8 +299,6 @@ function toggleLanguage() {
   applyLanguage();
   refreshPreview();
   runSolve();
-  runConversion();
-  runAssociation();
 }
 
 function applyTheme() {
@@ -323,6 +329,18 @@ function applyLanguage() {
   controls.languageToggleBtn.textContent = t("prefs.languageSwitch");
   controls.languageToggleBtn.setAttribute("aria-label", t("prefs.languageAria"));
   controls.languageToggleBtn.setAttribute("aria-pressed", String(ui.language === "en"));
+
+  if (state.conversion) {
+    runConversion();
+  } else {
+    renderIdleConversionOutput();
+  }
+
+  if (state.association) {
+    runAssociation();
+  } else {
+    renderIdleAssociationOutput();
+  }
 
 }
 
@@ -506,6 +524,14 @@ function runAssociation() {
   }
 }
 
+function renderIdleConversionOutput() {
+  controls.conversionOutput.innerHTML = emptyMessage(t("messages.convertEmpty"));
+}
+
+function renderIdleAssociationOutput() {
+  controls.associationOutput.innerHTML = emptyMessage(t("messages.associateEmpty"));
+}
+
 function associationLabel(type, fallback) {
   const label = t(`assocLabel.${type}`);
   return label === `assocLabel.${type}` ? fallback : label;
@@ -592,6 +618,13 @@ function matrixFields(prefix) {
     $(`${prefix}12`),
     $(`${prefix}21`),
     $(`${prefix}22`),
+  ];
+}
+
+function zeroMatrix() {
+  return [
+    [0, 0],
+    [0, 0],
   ];
 }
 

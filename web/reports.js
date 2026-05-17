@@ -1,5 +1,5 @@
-import { formatMatrix } from "./matrix.js?v=20260517-hero-controls-only";
-import { formatNumber } from "./math-utils.js?v=20260517-hero-controls-only";
+import { formatMatrix } from "./matrix.js?v=20260517-acentos-ui";
+import { formatNumber } from "./math-utils.js?v=20260517-acentos-ui";
 
 export function generateReport({ netlist, preview, solution, conversion, association }) {
   const lines = [
@@ -15,7 +15,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
 
   if (preview) {
     lines.push("## Componentes detectados", "");
-    lines.push("| Componente | Conexion | Valor |");
+    lines.push("| Componente | Conexión | Valor |");
     lines.push("| --- | --- | --- |");
     if (preview.components.length === 0) {
       lines.push("| - | - | Sin componentes |");
@@ -28,13 +28,13 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (solution) {
-    lines.push("## Resolucion MVP1", "");
+    lines.push("## Resolución MVP1", "");
     lines.push(`Matriz Z: ${formatMatrix(solution.z, "ohm")}`);
     lines.push("");
     lines.push(`Matriz Y: ${formatMatrix(solution.y, "S")}`);
     lines.push("");
     if (solution.derivedFamilies?.length) {
-      lines.push("Matrices derivadas automaticamente:", "");
+      lines.push("Matrices derivadas automáticamente:", "");
       for (const family of solution.derivedFamilies) {
         if (family.status === "ok") {
           lines.push(`- Matriz ${family.label}: ${formatMatrix(family.matrix, family.unit)}`);
@@ -44,12 +44,12 @@ export function generateReport({ netlist, preview, solution, conversion, associa
       }
       lines.push("");
     }
-    lines.push(`Reciprocidad por Z: ${solution.reciprocalZ ? "si" : "no"}. Simetria por Z: ${solution.symmetricZ ? "si" : "no"}.`);
+    lines.push(`Reciprocidad por Z: ${solution.reciprocalZ ? "sí" : "no"}. Simetría por Z: ${solution.symmetricZ ? "sí" : "no"}.`);
     lines.push("");
   }
 
   if (conversion) {
-    lines.push("## Conversion MVP2", "");
+    lines.push("## Conversión MVP2", "");
     lines.push(`${conversion.source} -> ${conversion.target}: ${formatMatrix(conversion.result)}`);
     lines.push("");
     lines.push(...conversion.conditions.map((condition) => `- ${condition}`));
@@ -57,7 +57,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (association) {
-    lines.push("## Asociacion MVP3", "");
+    lines.push("## Asociación MVP3", "");
     lines.push(`${association.label} usando ${association.family}: ${formatMatrix(association.result)}`);
     lines.push("");
     lines.push(...association.steps.map((step) => `- ${step}`));
@@ -76,7 +76,7 @@ export function generateLatexReport({ netlist, solution, conversion, association
     "\\end{verbatim}",
   ];
   if (solution) {
-    lines.push("\\subsection*{Parametros calculados}");
+    lines.push("\\subsection*{Parámetros calculados}");
     lines.push(`\\[ Z = ${matrixToLatex(solution.z)}\\ \\Omega \\]`);
     lines.push(`\\[ Y = ${matrixToLatex(solution.y)}\\ S \\]`);
     for (const family of solution.derivedFamilies || []) {
@@ -88,11 +88,11 @@ export function generateLatexReport({ netlist, solution, conversion, association
     }
   }
   if (conversion) {
-    lines.push("\\subsection*{Conversion}");
+    lines.push("\\subsection*{Conversión}");
     lines.push(`\\[ ${conversion.source} \\rightarrow ${conversion.target}: ${matrixToLatex(conversion.result)} \\]`);
   }
   if (association) {
-    lines.push("\\subsection*{Asociacion}");
+    lines.push("\\subsection*{Asociación}");
     lines.push(`\\[ ${association.family}_{eq} = ${matrixToLatex(association.result)} \\]`);
   }
   return lines.join("\n");

@@ -24,7 +24,7 @@ export const EXAMPLES = {
     netlist: "R1 1 2 60",
   },
   derivacion: {
-    label: "Impedancia en derivacion Zp",
+    label: "Impedancia en derivación Zp",
     netlist: "R1 1 0 45",
   },
   dobleParalelo: {
@@ -67,7 +67,7 @@ export function parseNetlist(text) {
 
     if (directive === ".port") {
       if (tokens.length < 4) {
-        warnings.push(`Linea ${lineNumber}: .port incompleto. Use .port P1 nodo+ nodo-.`);
+        warnings.push(`Línea ${lineNumber}: .port incompleto. Use .port P1 nodo+ nodo-.`);
         return;
       }
       const portId = tokens[1].toUpperCase();
@@ -76,14 +76,14 @@ export function parseNetlist(text) {
       } else if (portId === "P2") {
         ports.p2 = { ...ports.p2, positive: tokens[2], negative: tokens[3] };
       } else {
-        warnings.push(`Linea ${lineNumber}: puerto desconocido ${tokens[1]}.`);
+        warnings.push(`Línea ${lineNumber}: puerto desconocido ${tokens[1]}.`);
       }
       return;
     }
 
     if (directive === ".ports") {
       if (tokens.length < 5) {
-        warnings.push(`Linea ${lineNumber}: .ports incompleto. Use .ports p1+ p1- p2+ p2-.`);
+        warnings.push(`Línea ${lineNumber}: .ports incompleto. Use .ports p1+ p1- p2+ p2-.`);
         return;
       }
       ports.p1 = { ...ports.p1, positive: tokens[1], negative: tokens[2] };
@@ -92,18 +92,18 @@ export function parseNetlist(text) {
     }
 
     if (tokens.length < 4) {
-      warnings.push(`Linea ${lineNumber}: componente incompleto. Formato: R1 nodoA nodoB valor.`);
+      warnings.push(`Línea ${lineNumber}: componente incompleto. Formato: R1 nodoA nodoB valor.`);
       return;
     }
 
     const [id, nodeA, nodeB, rawValue] = tokens;
     const kind = id[0]?.toUpperCase();
     if (!SUPPORTED_COMPONENTS.has(kind)) {
-      warnings.push(`Linea ${lineNumber}: tipo ${kind || "?"} no soportado. Use R, Z, Y, L o C.`);
+      warnings.push(`Línea ${lineNumber}: tipo ${kind || "?"} no soportado. Use R, Z, Y, L o C.`);
       return;
     }
     if (tokens.length > 4) {
-      warnings.push(`Linea ${lineNumber}: se ignoran tokens extra: ${tokens.slice(4).join(" ")}.`);
+      warnings.push(`Línea ${lineNumber}: se ignoran tokens extra: ${tokens.slice(4).join(" ")}.`);
     }
 
     const numeric = parseScalar(rawValue);
@@ -122,7 +122,7 @@ export function parseNetlist(text) {
   const availableNodes = new Set(components.flatMap((component) => [component.nodeA, component.nodeB]));
   for (const node of portNodes) {
     if (!isGround(node) && components.length > 0 && !availableNodes.has(node)) {
-      warnings.push(`El borne ${node} no aparece conectado a ningun componente.`);
+      warnings.push(`El borne ${node} no aparece conectado a ningún componente.`);
     }
   }
 
@@ -145,11 +145,11 @@ export function solveTwoPort(text) {
   const warnings = [...parsed.warnings];
   const unsupported = parsed.components.filter((component) => !ANALYSIS_COMPONENTS.has(component.kind));
   if (unsupported.length > 0) {
-    warnings.push("El solucionador numerico del navegador calcula R/Z/Y. L y C quedan para el motor simbolico Python local.");
+    warnings.push("El solucionador numérico del navegador calcula R/Z/Y. L y C quedan para el motor simbólico Python local.");
   }
   for (const component of parsed.components) {
     if (ANALYSIS_COMPONENTS.has(component.kind) && !Number.isFinite(component.numeric)) {
-      throw new Error(`El componente ${component.id} necesita un valor numerico real para resolver en el navegador.`);
+      throw new Error(`El componente ${component.id} necesita un valor numérico real para resolver en el navegador.`);
     }
   }
 
@@ -170,18 +170,18 @@ export function solveTwoPort(text) {
 
   const steps = [
     {
-      title: "Parametros Z por definicion",
+      title: "Parámetros Z por definición",
       text: "Para obtener la primera columna se impone I1 = 1 A e I2 = 0 A, equivalente a dejar abierto el puerto 2. Para la segunda columna se impone I1 = 0 A e I2 = 1 A.",
       equations: [`Z = ${formatMatrix(z, "ohm")}`],
     },
     {
-      title: "Parametros Y por definicion",
+      title: "Parámetros Y por definición",
       text: "Para obtener la primera columna se impone V1 = 1 V y V2 = 0 V, es decir puerto 2 en cortocircuito. Para la segunda columna se impone V1 = 0 V y V2 = 1 V.",
       equations: [`Y = ${formatMatrix(y, "S")}`],
     },
     {
-      title: "Parametros derivados automaticos",
-      text: "Desde la matriz Z calculada se obtienen automaticamente las familias h, g y Gamma/ABCD cuando cumplen sus condiciones de existencia.",
+      title: "Parámetros derivados automáticos",
+      text: "Desde la matriz Z calculada se obtienen automáticamente las familias h, g y Gamma/ABCD cuando cumplen sus condiciones de existencia.",
       equations: derivedFamilies.map((family) => (
         family.status === "ok"
           ? `${family.label} = ${formatMatrix(family.matrix, family.unit)}`
@@ -189,8 +189,8 @@ export function solveTwoPort(text) {
       )),
     },
     {
-      title: "Verificacion didactica",
-      text: "Si z12 = z21 o y12 = y21, el cuadripolo pasivo bilateral queda verificado como reciproco dentro de la tolerancia numerica.",
+      title: "Verificación didáctica",
+      text: "Si z12 = z21 o y12 = y21, el cuadripolo pasivo bilateral queda verificado como recíproco dentro de la tolerancia numérica.",
       equations: [
         `z12 - z21 = ${formatNumber(z[0][1] - z[1][0])}`,
         `y12 - y21 = ${formatNumber(y[0][1] - y[1][0])}`,
@@ -256,7 +256,7 @@ export function convertMatrix(sourceFamily, targetFamily, matrix) {
         [-delta / y21, -y11 / y21],
       ],
       conditions: [`y21 = ${formatNumber(y21)} debe ser distinto de cero.`],
-      steps: ["Conversion directa Y -> gamma con la convencion V1 = A V2 - B I2 e I1 = C V2 - D I2."],
+      steps: ["Conversión directa Y -> gamma con la convención V1 = A V2 - B I2 e I1 = C V2 - D I2."],
     };
   }
   const toZ = matrixToZ(source, matrix);
@@ -277,11 +277,11 @@ export function associateTwoPorts(type, matrixA, matrixB, bruneValues = []) {
   const result = association.operation === "multiply" ? multiplyMatrices(matrixA, matrixB) : addMatrices(matrixA, matrixB);
   const brune = evaluateBrune(bruneValues);
   const steps = [
-    `Tipo de asociacion: ${association.label}.`,
+    `Tipo de asociación: ${association.label}.`,
     `Familia conveniente: ${association.family}.`,
     association.operation === "multiply"
-      ? "En cascada se multiplican matrices gamma respetando el orden de conexion."
-      : `Para esta asociacion ideal se suman directamente los parametros ${association.family}.`,
+      ? "En cascada se multiplican matrices gamma respetando el orden de conexión."
+      : `Para esta asociación ideal se suman directamente los parámetros ${association.family}.`,
     brune.message,
   ];
   return {
@@ -308,7 +308,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
 
   if (preview) {
     lines.push("## Componentes detectados", "");
-    lines.push("| Componente | Conexion | Valor |");
+    lines.push("| Componente | Conexión | Valor |");
     lines.push("| --- | --- | --- |");
     if (preview.components.length === 0) {
       lines.push("| - | - | Sin componentes |");
@@ -321,13 +321,13 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (solution) {
-    lines.push("## Resolucion MVP1", "");
+    lines.push("## Resolución MVP1", "");
     lines.push(`Matriz Z: ${formatMatrix(solution.z, "ohm")}`);
     lines.push("");
     lines.push(`Matriz Y: ${formatMatrix(solution.y, "S")}`);
     lines.push("");
     if (solution.derivedFamilies?.length) {
-      lines.push("Matrices derivadas automaticamente:");
+      lines.push("Matrices derivadas automáticamente:");
       lines.push("");
       for (const family of solution.derivedFamilies) {
         if (family.status === "ok") {
@@ -338,12 +338,12 @@ export function generateReport({ netlist, preview, solution, conversion, associa
       }
       lines.push("");
     }
-    lines.push(`Reciprocidad por Z: ${solution.reciprocalZ ? "si" : "no"}. Simetria por Z: ${solution.symmetricZ ? "si" : "no"}.`);
+    lines.push(`Reciprocidad por Z: ${solution.reciprocalZ ? "sí" : "no"}. Simetría por Z: ${solution.symmetricZ ? "sí" : "no"}.`);
     lines.push("");
   }
 
   if (conversion) {
-    lines.push("## Conversion MVP2", "");
+    lines.push("## Conversión MVP2", "");
     lines.push(`${conversion.source} -> ${conversion.target}: ${formatMatrix(conversion.result)}`);
     lines.push("");
     lines.push(...conversion.conditions.map((condition) => `- ${condition}`));
@@ -351,7 +351,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (association) {
-    lines.push("## Asociacion MVP3", "");
+    lines.push("## Asociación MVP3", "");
     lines.push(`${association.label} usando ${association.family}: ${formatMatrix(association.result)}`);
     lines.push("");
     lines.push(...association.steps.map((step) => `- ${step}`));
@@ -370,7 +370,7 @@ export function generateLatexReport({ netlist, solution, conversion, association
     "\\end{verbatim}",
   ];
   if (solution) {
-    lines.push("\\subsection*{Parametros calculados}");
+    lines.push("\\subsection*{Parámetros calculados}");
     lines.push(`\\[ Z = ${matrixToLatex(solution.z)}\\ \\Omega \\]`);
     lines.push(`\\[ Y = ${matrixToLatex(solution.y)}\\ S \\]`);
     for (const family of solution.derivedFamilies || []) {
@@ -382,11 +382,11 @@ export function generateLatexReport({ netlist, solution, conversion, association
     }
   }
   if (conversion) {
-    lines.push("\\subsection*{Conversion}");
+    lines.push("\\subsection*{Conversión}");
     lines.push(`\\[ ${conversion.source} \\rightarrow ${conversion.target}: ${matrixToLatex(conversion.result)} \\]`);
   }
   if (association) {
-    lines.push("\\subsection*{Asociacion}");
+    lines.push("\\subsection*{Asociación}");
     lines.push(`\\[ ${association.family}_{eq} = ${matrixToLatex(association.result)} \\]`);
   }
   return lines.join("\n");
@@ -431,20 +431,20 @@ function buildMarkdown(parsed, svg) {
     "",
     "## Puertos",
     "",
-    "| Puerto | Tension | Corriente | Bornes |",
+    "| Puerto | Tensión | Corriente | Bornes |",
     "| --- | --- | --- | --- |",
     `| P1 | V1 | I1 | ${parsed.ports.p1.positive} - ${parsed.ports.p1.negative} |`,
     `| P2 | V2 | I2 | ${parsed.ports.p2.positive} - ${parsed.ports.p2.negative} |`,
     "",
-    "## Convencion de bornes",
+    "## Convención de bornes",
     "",
-    "- El esquema grafico siempre rotula los bornes como 1, 1', 2 y 2'.",
-    "- Si no se declara `.ports`, se usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun que el dibujo muestra como 1' y 2'.",
+    "- El esquema gráfico siempre rotula los bornes como 1, 1', 2 y 2'.",
+    "- Si no se declara `.ports`, se usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno común que el dibujo muestra como 1' y 2'.",
     "- Para retornos inferiores independientes, declare por ejemplo `.ports 1 1' 2 2'`.",
     "",
     "## Componentes",
     "",
-    "| Linea | Componente | Tipo | Conexion | Valor |",
+    "| Línea | Componente | Tipo | Conexión | Valor |",
     "| --- | --- | --- | --- | --- |",
   ];
   if (parsed.components.length === 0) {
@@ -828,7 +828,7 @@ function collectAnalysisNodes(parsed) {
 
 function componentConductance(component) {
   if (!Number.isFinite(component.numeric)) {
-    throw new Error(`${component.id} no tiene valor numerico real.`);
+    throw new Error(`${component.id} no tiene valor numérico real.`);
   }
   if (component.kind === "Y") return component.numeric;
   if (Math.abs(component.numeric) < EPS) throw new Error(`${component.id} tiene impedancia nula; la matriz nodal seria singular.`);
@@ -924,7 +924,7 @@ function matrixToZ(source, matrix) {
         [1 / c, d / c],
       ],
       conditions: [`C = ${formatNumber(c)} debe ser distinto de cero.`],
-      steps: ["Se despejan V1 y V2 desde gamma usando la convencion del apunte."],
+      steps: ["Se despejan V1 y V2 desde gamma usando la convención del apunte."],
     };
   }
   throw new Error(`Familia no soportada: ${source}.`);
@@ -1004,7 +1004,7 @@ function associationInfo(type) {
     seriesParallel: { label: "Serie-Paralelo", family: "h", operation: "add" },
     parallelSeries: { label: "Paralelo-Serie", family: "g", operation: "add" },
   };
-  if (!map[type]) throw new Error(`Tipo de asociacion no soportado: ${type}.`);
+  if (!map[type]) throw new Error(`Tipo de asociación no soportado: ${type}.`);
   return map[type];
 }
 
@@ -1014,14 +1014,14 @@ function evaluateBrune(values) {
     return {
       status: "pending",
       valid: null,
-      message: "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociacion estructural.",
+      message: "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociación estructural.",
     };
   }
   if (numeric.some((value) => !Number.isFinite(value))) {
     return {
       status: "incomplete",
       valid: false,
-      message: "Test de Brune incompleto: ambos ensayos deben tener una variable numerica.",
+      message: "Test de Brune incompleto: ambos ensayos deben tener una variable numérica.",
     };
   }
   const valid = numeric.every((value) => Math.abs(value) < 1e-9);
@@ -1030,7 +1030,7 @@ function evaluateBrune(values) {
     valid,
     message: valid
       ? "Test de Brune: las variables de interferencia son cero; la suma/producto indicado es admisible."
-      : "Test de Brune: alguna variable de interferencia no es cero; la asociacion modifica los cuadripolos individuales.",
+      : "Test de Brune: alguna variable de interferencia no es cero; la asociación modifica los cuadripolos individuales.",
   };
 }
 
@@ -1136,7 +1136,7 @@ function validateMatrix(matrix) {
   }
   for (const row of matrix) {
     for (const value of row) {
-      if (!Number.isFinite(value)) throw new Error("La matriz solo admite numeros reales en esta version web.");
+      if (!Number.isFinite(value)) throw new Error("La matriz solo admite números reales en esta versión web.");
     }
   }
 }

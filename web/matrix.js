@@ -8,7 +8,7 @@ import {
   parseScalar,
   requireNonZero,
   validateMatrix,
-} from "./math-utils.js?v=20260517-hero-controls-only";
+} from "./math-utils.js?v=20260517-acentos-ui";
 
 export function convertMatrix(sourceFamily, targetFamily, matrix) {
   const source = normalizeFamily(sourceFamily);
@@ -19,7 +19,7 @@ export function convertMatrix(sourceFamily, targetFamily, matrix) {
       source,
       target,
       result: cloneMatrix(matrix),
-      conditions: ["No hay conversion: la familia de origen coincide con la de destino."],
+      conditions: ["No hay conversión: la familia de origen coincide con la de destino."],
       steps: ["La matriz se conserva sin cambios."],
     };
   }
@@ -35,7 +35,7 @@ export function convertMatrix(sourceFamily, targetFamily, matrix) {
         [-delta / y21, -y11 / y21],
       ],
       conditions: [`y21 = ${formatNumber(y21)} debe ser distinto de cero.`],
-      steps: ["Conversion directa Y -> gamma con la convencion V1 = A V2 - B I2 e I1 = C V2 - D I2."],
+      steps: ["Conversión directa Y -> gamma con la convención V1 = A V2 - B I2 e I1 = C V2 - D I2."],
     };
   }
   const toZ = matrixToZ(source, matrix);
@@ -56,11 +56,11 @@ export function associateTwoPorts(type, matrixA, matrixB, bruneValues = []) {
   const result = association.operation === "multiply" ? multiplyMatrices(matrixA, matrixB) : addMatrices(matrixA, matrixB);
   const brune = evaluateBrune(bruneValues);
   const steps = [
-    `Tipo de asociacion: ${association.label}.`,
+    `Tipo de asociación: ${association.label}.`,
     `Familia conveniente: ${association.family}.`,
     association.operation === "multiply"
-      ? "En cascada se multiplican matrices gamma respetando el orden de conexion."
-      : `Para esta asociacion ideal se suman directamente los parametros ${association.family}.`,
+      ? "En cascada se multiplican matrices gamma respetando el orden de conexión."
+      : `Para esta asociación ideal se suman directamente los parámetros ${association.family}.`,
     brune.message,
   ];
   return {
@@ -130,7 +130,7 @@ function matrixToZ(source, matrix) {
         [-h21 / h22, 1 / h22],
       ],
       conditions: [`h22 = ${formatNumber(h22)} debe ser distinto de cero.`],
-      steps: ["Se despeja V2 desde la segunda ecuacion h para volver a la forma V = Z I."],
+      steps: ["Se despeja V2 desde la segunda ecuación h para volver a la forma V = Z I."],
     };
   }
   if (source === "g") {
@@ -143,7 +143,7 @@ function matrixToZ(source, matrix) {
         [g21 / g11, delta / g11],
       ],
       conditions: [`g11 = ${formatNumber(g11)} debe ser distinto de cero.`],
-      steps: ["Se despeja V1 desde la primera ecuacion g para volver a la forma V = Z I."],
+      steps: ["Se despeja V1 desde la primera ecuación g para volver a la forma V = Z I."],
     };
   }
   if (source === "Gamma") {
@@ -155,7 +155,7 @@ function matrixToZ(source, matrix) {
         [1 / c, d / c],
       ],
       conditions: [`C = ${formatNumber(c)} debe ser distinto de cero.`],
-      steps: ["Se despejan V1 y V2 desde gamma usando la convencion del apunte."],
+      steps: ["Se despejan V1 y V2 desde gamma usando la convención del apunte."],
     };
   }
   throw new Error(`Familia no soportada: ${source}.`);
@@ -217,7 +217,7 @@ function associationInfo(type) {
     seriesParallel: { label: "Serie-Paralelo", family: "h", operation: "add" },
     parallelSeries: { label: "Paralelo-Serie", family: "g", operation: "add" },
   };
-  if (!map[type]) throw new Error(`Tipo de asociacion no soportado: ${type}.`);
+  if (!map[type]) throw new Error(`Tipo de asociación no soportado: ${type}.`);
   return map[type];
 }
 
@@ -227,14 +227,14 @@ function evaluateBrune(values) {
     return {
       status: "pending",
       valid: null,
-      message: "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociacion estructural.",
+      message: "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociación estructural.",
     };
   }
   if (numeric.some((value) => !Number.isFinite(value))) {
     return {
       status: "incomplete",
       valid: false,
-      message: "Test de Brune incompleto: ambos ensayos deben tener una variable numerica.",
+      message: "Test de Brune incompleto: ambos ensayos deben tener una variable numérica.",
     };
   }
   const valid = numeric.every((value) => Math.abs(value) < 1e-9);
@@ -243,6 +243,6 @@ function evaluateBrune(values) {
     valid,
     message: valid
       ? "Test de Brune: las variables de interferencia son cero; la suma/producto indicado es admisible."
-      : "Test de Brune: alguna variable de interferencia no es cero; la asociacion modifica los cuadripolos individuales.",
+      : "Test de Brune: alguna variable de interferencia no es cero; la asociación modifica los cuadripolos individuales.",
   };
 }

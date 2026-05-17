@@ -89,7 +89,7 @@ assert.equal(apostrophePorts.ports.p1.negative, "1'");
 assert.equal(apostrophePorts.ports.p2.negative, "2'");
 
 const duplicateIds = parseNetlistModule("R1 1 0 10\nR1 1 2 20");
-assert.match(duplicateIds.warnings.join("\n"), /identificador R1 esta repetido/i);
+assert.match(duplicateIds.warnings.join("\n"), /identificador R1 está repetido/i);
 
 const selfLoop = parseNetlistModule("R1 1 1 10");
 assert.match(selfLoop.warnings.join("\n"), /mismo nodo en ambos extremos/i);

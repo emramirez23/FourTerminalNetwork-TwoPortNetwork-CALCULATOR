@@ -13,9 +13,9 @@ def test_preview_builds_mermaid_and_component_table() -> None:
     preview = build_netlist_preview("R1 1 n1 30\nR2 n1 0 40\nR3 n1 2 50")
 
     assert "<svg" in preview["svg"]
-    assert "Diagrama esquematico" in preview["markdown"]
+    assert "Diagrama esquemático" in preview["markdown"]
     assert "```mermaid" in preview["markdown"]
-    assert "Convencion de bornes" in preview["markdown"]
+    assert "Convención de bornes" in preview["markdown"]
     assert "R1<br/>R = 30" in preview["mermaid"]
     assert "| 1 | R1 | R | 1 - n1 | 30 | 30 |" in preview["markdown"]
     assert preview["warnings"] == []

@@ -34,7 +34,7 @@ def build_netlist_preview(text: str) -> dict[str, object]:
         directive = tokens[0].lower()
         if directive == ".port":
             if len(tokens) < 4:
-                warnings.append(f"Linea {line_number}: .port incompleto. Formato: .port P1 nodo+ nodo-.")
+                warnings.append(f"Línea {line_number}: .port incompleto. Formato: .port P1 nodo+ nodo-.")
                 continue
             port_id = tokens[1].upper()
             if port_id == "P1":
@@ -42,31 +42,31 @@ def build_netlist_preview(text: str) -> dict[str, object]:
             elif port_id == "P2":
                 port2 = Port("P2", tokens[2], tokens[3], "V2", "I2")
             else:
-                warnings.append(f"Linea {line_number}: puerto desconocido {tokens[1]!r}.")
+                warnings.append(f"Línea {line_number}: puerto desconocido {tokens[1]!r}.")
             continue
         if directive == ".ports":
             if len(tokens) < 5:
-                warnings.append(f"Linea {line_number}: .ports incompleto. Formato: .ports p1+ p1- p2+ p2-.")
+                warnings.append(f"Línea {line_number}: .ports incompleto. Formato: .ports p1+ p1- p2+ p2-.")
                 continue
             port1 = Port("P1", tokens[1], tokens[2], "V1", "I1")
             port2 = Port("P2", tokens[3], tokens[4], "V2", "I2")
             continue
         if len(tokens) < 4:
-            warnings.append(f"Linea {line_number}: componente incompleto. Formato: Nombre nodoA nodoB valor.")
+            warnings.append(f"Línea {line_number}: componente incompleto. Formato: Nombre nodoA nodoB valor.")
             continue
         if len(tokens) > 4:
-            warnings.append(f"Linea {line_number}: se ignoran tokens extra: {' '.join(tokens[4:])}.")
+            warnings.append(f"Línea {line_number}: se ignoran tokens extra: {' '.join(tokens[4:])}.")
         component_id, node_a, node_b, raw_value = tokens[:4]
         kind = component_id[0].upper()
         if kind not in {item.value for item in ComponentKind}:
-            warnings.append(f"Linea {line_number}: tipo {kind!r} no soportado. Use R, Z, L, C o Y.")
+            warnings.append(f"Línea {line_number}: tipo {kind!r} no soportado. Use R, Z, L, C o Y.")
             continue
         parsed_value: sp.Expr | None
         try:
             parsed_value = parse_value(raw_value)
         except NetlistParseError as exc:
             parsed_value = None
-            warnings.append(f"Linea {line_number}: {exc}")
+            warnings.append(f"Línea {line_number}: {exc}")
         components.append(PreviewComponent(line_number, component_id, kind, node_a, node_b, raw_value, parsed_value))
 
     ports = (port1, port2)
@@ -113,7 +113,7 @@ def _build_markdown(
     lines = [
         "# Vista previa del netlist",
         "",
-        "## Diagrama esquematico",
+        "## Diagrama esquemático",
         "",
         "```svg",
         svg,
@@ -127,7 +127,7 @@ def _build_markdown(
         "",
         "## Puertos",
         "",
-        "| Puerto | Tension | Corriente | Bornes |",
+        "| Puerto | Tensión | Corriente | Bornes |",
         "| --- | --- | --- | --- |",
     ]
     for port in ports:
@@ -137,15 +137,15 @@ def _build_markdown(
     lines.extend(
         [
             "",
-            "## Convencion de bornes",
+            "## Convención de bornes",
             "",
-            "- El esquema grafico siempre rotula los bornes como 1, 1', 2 y 2'.",
-            "- Si no se declara `.ports`, se usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno comun que el dibujo muestra como 1' y 2'.",
+            "- El esquema gráfico siempre rotula los bornes como 1, 1', 2 y 2'.",
+            "- Si no se declara `.ports`, se usa P1=(1,0) y P2=(2,0): el nodo 0 es el retorno común que el dibujo muestra como 1' y 2'.",
             "- Para retornos inferiores independientes, declare por ejemplo `.ports 1 1' 2 2'`.",
             "",
             "## Componentes",
             "",
-            "| Linea | Componente | Tipo | Conexion | Valor | Interpretacion |",
+            "| Línea | Componente | Tipo | Conexión | Valor | Interpretación |",
             "| --- | --- | --- | --- | --- | --- |",
         ]
     )
