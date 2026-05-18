@@ -52,11 +52,14 @@ const stackedDualRailNetlist = [
 
 const previewCases = [
   EXAMPLES.escalera.netlist,
+  EXAMPLES.escaleraGuia.netlist,
   EXAMPLES.t.netlist,
+  EXAMPLES.tSimetrico.netlist,
   EXAMPLES.pi.netlist,
-  EXAMPLES.serie.netlist,
-  EXAMPLES.derivacion.netlist,
-  EXAMPLES.dobleParalelo.netlist,
+  EXAMPLES.piSimetrico.netlist,
+  EXAMPLES.lEntrada.netlist,
+  EXAMPLES.lSalida.netlist,
+  EXAMPLES.tPuenteado.netlist,
   EXAMPLES.x.netlist,
   EXAMPLES.inferior.netlist,
   ["R1 1 n1 30", "R2 n1 0 40", "R3 n1 2 50"].join("\n"),

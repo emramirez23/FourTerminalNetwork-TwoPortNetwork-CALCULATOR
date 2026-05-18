@@ -1,6 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "test": "node core.test.mjs"
+    "test": "node core.test.mjs && node quick-builder.test.mjs",
+    "test:core": "node core.test.mjs",
+    "test:builder": "node quick-builder.test.mjs"
   }
 }

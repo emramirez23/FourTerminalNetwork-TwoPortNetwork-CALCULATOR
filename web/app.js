@@ -1,11 +1,11 @@
 import {
   DEFAULT_NETLIST,
   EXAMPLES,
-} from "./netlist.js?v=20260517-acentos-ui";
-import { buildPreview } from "./core.js?v=20260517-acentos-ui";
-import { associateTwoPorts, convertMatrix, parseMatrixText } from "./matrix.js?v=20260517-acentos-ui";
-import { generateLatexReport, generateReport } from "./reports.js?v=20260517-acentos-ui";
-import { solveTwoPort } from "./solver.js?v=20260517-acentos-ui";
+} from "./netlist.js?v=20260518-builder-topologies";
+import { buildPreview } from "./core.js?v=20260518-builder-topologies";
+import { associateTwoPorts, convertMatrix, parseMatrixText } from "./matrix.js?v=20260518-builder-topologies";
+import { generateLatexReport, generateReport } from "./reports.js?v=20260518-builder-topologies";
+import { solveTwoPort } from "./solver.js?v=20260518-builder-topologies";
 
 const state = {
   preview: null,
@@ -79,6 +79,8 @@ const TEXT = {
     "actions.convert": "Convertir",
     "actions.associate": "Asociar",
     "actions.copyReport": "Copiar reporte",
+    "actions.attenuatorSimulator": "Atenuadores",
+    "actions.attenuatorSimulatorAria": "Abrir simulador de atenuadores",
     "fields.netlist": "Netlist",
     "fields.source": "Origen",
     "fields.target": "Destino",
@@ -99,12 +101,15 @@ const TEXT = {
     "builder.middleShunt": "Derivación nodo medio",
     "builder.outputShunt": "Derivación salida",
     "examples.escalera": "Escalera resistiva del apunte",
+    "examples.escaleraGuia": "Escalera guia problema 2",
     "examples.t": "Cuadripolo T",
+    "examples.tSimetrico": "T simetrico",
     "examples.pi": "Cuadripolo pi",
-    "examples.serie": "Impedancia serie Zs",
-    "examples.derivacion": "Impedancia en derivación Zp",
-    "examples.dobleParalelo": "Dos derivaciones en paralelo",
-    "examples.x": "Cuadripolo X / lattice",
+    "examples.piSimetrico": "Pi simetrico",
+    "examples.lEntrada": "L derivacion entrada + serie",
+    "examples.lSalida": "L serie + derivacion salida",
+    "examples.tPuenteado": "T puenteado",
+    "examples.x": "Celosia / X simetrico",
     "examples.inferior": "Rama inferior con nodo b1",
     "assoc.cascade": "Cascada - usar Gamma",
     "assoc.seriesSeries": "Serie-Serie - usar Z",
@@ -137,6 +142,8 @@ const TEXT = {
     "states.notVerified": "no verificada",
     "states.reciprocityZ": "Reciprocidad Z: {state}",
     "states.symmetryZ": "Simetría Z: {state}",
+    "states.reciprocal": "Rec\u00edproco",
+    "states.symmetric": "Sim\u00e9trico",
     "conditions.title": "Condiciones de existencia",
     "association.using": "{label} usando parámetros {family}.",
     "brune.pending": "Test de Brune pendiente: cargue las variables de interferencia de los dos ensayos si quiere validar la asociación estructural.",
@@ -172,6 +179,8 @@ const TEXT = {
     "actions.convert": "Convert",
     "actions.associate": "Associate",
     "actions.copyReport": "Copy report",
+    "actions.attenuatorSimulator": "Attenuators",
+    "actions.attenuatorSimulatorAria": "Open attenuator simulator",
     "fields.netlist": "Netlist",
     "fields.source": "Source",
     "fields.target": "Target",
@@ -192,12 +201,15 @@ const TEXT = {
     "builder.middleShunt": "Middle-node shunt",
     "builder.outputShunt": "Output shunt",
     "examples.escalera": "Study-note resistive ladder",
+    "examples.escaleraGuia": "Guide problem 2 ladder",
     "examples.t": "T two-port",
+    "examples.tSimetrico": "Symmetric T",
     "examples.pi": "Pi two-port",
-    "examples.serie": "Series impedance Zs",
-    "examples.derivacion": "Shunt impedance Zp",
-    "examples.dobleParalelo": "Two parallel shunts",
-    "examples.x": "X / lattice two-port",
+    "examples.piSimetrico": "Symmetric pi",
+    "examples.lEntrada": "Input shunt + series L",
+    "examples.lSalida": "Series + output shunt L",
+    "examples.tPuenteado": "Bridged T",
+    "examples.x": "Lattice / symmetric X",
     "examples.inferior": "Lower rail with node b1",
     "assoc.cascade": "Cascade - use Gamma",
     "assoc.seriesSeries": "Series-Series - use Z",
@@ -230,6 +242,8 @@ const TEXT = {
     "states.notVerified": "not verified",
     "states.reciprocityZ": "Z reciprocity: {state}",
     "states.symmetryZ": "Z symmetry: {state}",
+    "states.reciprocal": "Reciprocal",
+    "states.symmetric": "Symmetric",
     "conditions.title": "Existence conditions",
     "association.using": "{label} using {family} parameters.",
     "brune.pending": "Brune test pending: enter both interference variables if you want to validate the structural association.",
@@ -466,8 +480,8 @@ function runSolve() {
     controls.solveOutput.innerHTML = [
       solveMatricesGallery(solution),
       `<div class="result-grid">
-        <span class="${solution.reciprocalZ ? "ok" : "warn"}">${escapeHtml(t("states.reciprocityZ", { state: t(solution.reciprocalZ ? "states.verified" : "states.notVerified") }))}</span>
-        <span class="${solution.symmetricZ ? "ok" : "warn"}">${escapeHtml(t("states.symmetryZ", { state: t(solution.symmetricZ ? "states.verified" : "states.notVerified") }))}</span>
+        ${verificationBadge("states.reciprocal", solution.reciprocalZ)}
+        ${verificationBadge("states.symmetric", solution.symmetricZ)}
       </div>`,
       stepsHtml(solution.steps),
       solution.warnings.length ? warningsHtml(solution.warnings) : "",
@@ -541,6 +555,16 @@ function bruneMessage(brune) {
   const key = `brune.${brune.status}`;
   const message = t(key);
   return message === key ? brune.message : message;
+}
+
+function verificationBadge(labelKey, passed) {
+  const label = t(labelKey);
+  const status = t(passed ? "states.verified" : "states.notVerified");
+  const icon = passed ? "&#10003;" : "&#10005;";
+  return `<span class="state-badge state-badge--${passed ? "ok" : "error"}" title="${escapeHtml(`${label}: ${status}`)}" aria-label="${escapeHtml(`${label}: ${status}`)}">
+    <span class="state-badge__label">${escapeHtml(label)}</span>
+    <span class="state-badge__icon" aria-hidden="true">${icon}</span>
+  </span>`;
 }
 
 function showMarkdownReport() {

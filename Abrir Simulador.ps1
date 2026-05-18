@@ -5,10 +5,15 @@ $projectRoot = if ($PSCommandPath) { Split-Path -Parent $PSCommandPath } else { 
 $webRoot = Join-Path $projectRoot "web"
 $artifactRoot = Join-Path $projectRoot "artifacts\local_server"
 $preferredPort = 8888
-$assetVersion = "20260517-mvp2-mvp3-zero"
+$assetVersion = "20260518-builder-topologies"
 $pythonCommand = $null
 
 function Get-PythonCommand {
+  $localPython = Join-Path $projectRoot ".venv\Scripts\python.exe"
+  if (Test-Path $localPython) {
+    return $localPython
+  }
+
   foreach ($candidate in @("py", "python")) {
     try {
       $command = Get-Command $candidate -ErrorAction Stop
@@ -92,7 +97,7 @@ if ((Test-PortOpen -Port $port) -and -not $serverReady) {
 if (-not $serverReady) {
   $stdout = Join-Path $artifactRoot "http-server.out.log"
   $stderr = Join-Path $artifactRoot "http-server.err.log"
-  $arguments = @("-m", "http.server", $port, "--bind", "127.0.0.1", "-d", $webRoot)
+  $arguments = @("-m", "http.server", "$port", "--bind", "127.0.0.1", "-d", "`"$webRoot`"")
 
   Start-Process `
     -FilePath $pythonCommand `

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simulador de Cuadripolos UTN</title>
-  <link rel="stylesheet" href="./styles.css?v=20260517-mvp2-mvp3-zero">
-  <script type="module" src="./app.js?v=20260517-mvp2-mvp3-zero"></script>
+  <link rel="stylesheet" href="./styles.css?v=20260518-builder-topologies">
+  <script type="module" src="./app.js?v=20260518-builder-topologies"></script>
 </head>
 <body>
   <header class="hero">
@@ -27,6 +27,12 @@
               </svg>
               <span>GitHub</span>
             </a>
+            <a class="social-link" href="mailto:ramirezelias.marcos@gmail.com" aria-label="Enviar email a Elías Ramírez">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M2.4 4.8h19.2c.66 0 1.2.54 1.2 1.2v12c0 .66-.54 1.2-1.2 1.2H2.4c-.66 0-1.2-.54-1.2-1.2V6c0-.66.54-1.2 1.2-1.2Zm9.6 7.78L3.8 6.96V18h16.4V6.96l-8.2 5.62Zm0-1.83 8-5.48H4l8 5.48Z"/>
+              </svg>
+              <span>Gmail</span>
+            </a>
           </div>
         </div>
       </div>
@@ -38,6 +44,7 @@
       <div class="preference-actions" aria-label="Preferencias">
         <button id="themeToggleBtn" class="secondary compact" type="button" aria-pressed="false"></button>
         <button id="languageToggleBtn" class="secondary compact" type="button" aria-pressed="false"></button>
+        <a class="preference-link" href="https://attenuatorcalculator.netlify.app/" target="_blank" rel="noopener noreferrer" data-i18n="actions.attenuatorSimulator" data-i18n-aria-label="actions.attenuatorSimulatorAria">Atenuadores</a>
       </div>
     </div>
   </header>
@@ -63,7 +70,7 @@
     <section class="panel schematic-panel">
       <div class="panel-title">
         <div>
-          <span class="tag">Preview</span>
+          <span class="tag">Esquema</span>
           <h2 data-i18n="sections.previewTitle">Circuito esquemático</h2>
         </div>
       </div>
@@ -74,7 +81,7 @@
     <section class="panel solve-panel">
       <div class="panel-title">
         <div>
-          <span class="tag">MVP1</span>
+          <span class="tag">Cálculo</span>
           <h2 data-i18n="sections.solveTitle">Resolver matrices</h2>
         </div>
         <button id="solveBtn" type="button" data-i18n="actions.solve">Resolver</button>
@@ -85,7 +92,7 @@
     <section class="panel builder-panel">
       <div class="panel-title">
         <div>
-          <span class="tag">MVP4</span>
+          <span class="tag">Constructor</span>
           <h2 data-i18n="builder.title">Constructor rápido</h2>
         </div>
       </div>
@@ -113,7 +120,7 @@
     <section class="panel conversion-panel">
       <div class="panel-title">
         <div>
-          <span class="tag">MVP2</span>
+          <span class="tag">Matrices</span>
           <h2 data-i18n="sections.conversionTitle">Conversión de matrices</h2>
         </div>
         <button id="convertBtn" type="button" data-i18n="actions.convert">Convertir</button>
@@ -165,7 +172,7 @@
     <section class="panel association-panel">
       <div class="panel-title">
         <div>
-          <span class="tag">MVP3</span>
+          <span class="tag">Asociación</span>
           <h2 data-i18n="sections.associationTitle">Asociar cuadripolos</h2>
         </div>
         <button id="associateBtn" type="button" data-i18n="actions.associate">Asociar</button>
@@ -213,7 +220,7 @@
     <section class="panel export-panel">
       <div class="panel-title">
         <div>
-          <span class="tag">MVP5</span>
+          <span class="tag">Salida</span>
           <h2 data-i18n="sections.exportTitle">Explicación y exportación</h2>
         </div>
         <div class="inline-actions">

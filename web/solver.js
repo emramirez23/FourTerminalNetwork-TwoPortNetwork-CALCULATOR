@@ -1,6 +1,6 @@
-import { convertMatrix, formatMatrix } from "./matrix.js?v=20260517-acentos-ui";
-import { EPS, formatNumber, zeros } from "./math-utils.js?v=20260517-acentos-ui";
-import { isGround, naturalCompare, parseNetlist } from "./netlist.js?v=20260517-acentos-ui";
+import { convertMatrix, formatMatrix } from "./matrix.js?v=20260518-builder-topologies";
+import { EPS, formatNumber, zeros } from "./math-utils.js?v=20260518-builder-topologies";
+import { isGround, naturalCompare, parseNetlist } from "./netlist.js?v=20260518-builder-topologies";
 
 const ANALYSIS_COMPONENTS = new Set(["R", "Z", "Y"]);
 const AUTO_DERIVED_FAMILIES = [
@@ -123,7 +123,7 @@ function solveWithVoltages(parsed, v1, v2) {
 }
 
 function runMna(parsed, currentSources, voltageSources) {
-  const nodes = collectAnalysisNodes(parsed);
+  const { nodes, reference } = collectAnalysisNodes(parsed);
   const nodeIndex = new Map(nodes.map((node, index) => [node, index]));
   const n = nodes.length;
   const size = n + voltageSources.length;
@@ -159,7 +159,7 @@ function runMna(parsed, currentSources, voltageSources) {
   const sourceIndex = new Map(voltageSources.map((source, index) => [source.label, n + index]));
   return {
     voltage(node) {
-      if (isGround(node)) return 0;
+      if (isGround(node) || node === reference) return 0;
       const index = nodeIndex.get(node);
       return index === undefined ? 0 : solution[index];
     },
@@ -180,7 +180,14 @@ function collectAnalysisNodes(parsed) {
     if (!isGround(port.positive)) nodes.add(port.positive);
     if (!isGround(port.negative)) nodes.add(port.negative);
   }
-  return Array.from(nodes).sort(naturalCompare);
+  const sortedNodes = Array.from(nodes).sort(naturalCompare);
+  const hasExplicitGround = [...parsed.components.flatMap((component) => [component.nodeA, component.nodeB]), parsed.ports.p1.negative, parsed.ports.p2.negative]
+    .some((node) => isGround(node));
+  const reference = hasExplicitGround ? null : parsed.ports.p1.negative || sortedNodes[0] || null;
+  return {
+    nodes: reference === null ? sortedNodes : sortedNodes.filter((node) => node !== reference),
+    reference,
+  };
 }
 
 function componentConductance(component) {

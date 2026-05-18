@@ -11,28 +11,40 @@ export const EXAMPLES = {
     label: "Escalera resistiva del apunte",
     netlist: DEFAULT_NETLIST,
   },
+  escaleraGuia: {
+    label: "Escalera guia problema 2",
+    netlist: ["R1 1 n1 50", "R2 n1 n2 30", "R3 n2 n3 37", "R4 n3 2 5", "R5 n1 0 60", "R6 n2 0 10", "R7 n3 0 54"].join("\n"),
+  },
   t: {
     label: "Cuadripolo T",
     netlist: ["R1 1 n1 25", "R2 n1 2 35", "R3 n1 0 50"].join("\n"),
+  },
+  tSimetrico: {
+    label: "T simetrico",
+    netlist: ["R1 1 n1 25", "R2 n1 2 25", "R3 n1 0 50"].join("\n"),
   },
   pi: {
     label: "Cuadripolo pi",
     netlist: ["R1 1 0 100", "R2 1 2 40", "R3 2 0 80"].join("\n"),
   },
-  serie: {
-    label: "Impedancia serie Zs",
-    netlist: "R1 1 2 60",
+  piSimetrico: {
+    label: "Pi simetrico",
+    netlist: ["R1 1 0 100", "R2 1 2 40", "R3 2 0 100"].join("\n"),
   },
-  derivacion: {
-    label: "Impedancia en derivación Zp",
-    netlist: "R1 1 0 45",
+  lEntrada: {
+    label: "L derivacion entrada + serie",
+    netlist: ["R1 1 0 40", "R2 1 2 30"].join("\n"),
   },
-  dobleParalelo: {
-    label: "Dos derivaciones en paralelo",
-    netlist: ["R1 1 0 15", "R2 1 0 20"].join("\n"),
+  lSalida: {
+    label: "L serie + derivacion salida",
+    netlist: ["R1 1 2 30", "R2 2 0 40"].join("\n"),
+  },
+  tPuenteado: {
+    label: "T puenteado",
+    netlist: ["R1 1 n1 20", "R2 n1 2 20", "R3 n1 0 50", "R4 1 2 100"].join("\n"),
   },
   x: {
-    label: "Cuadripolo X / lattice",
+    label: "Celosia / X simetrico",
     netlist: [".ports 1 1p 2 2p", "R1 1 2 120", "R2 1p 2p 120", "R3 1 2p 300", "R4 1p 2 300"].join("\n"),
   },
   inferior: {
@@ -321,7 +333,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (solution) {
-    lines.push("## Resolución MVP1", "");
+    lines.push("## Resolución de parámetros", "");
     lines.push(`Matriz Z: ${formatMatrix(solution.z, "ohm")}`);
     lines.push("");
     lines.push(`Matriz Y: ${formatMatrix(solution.y, "S")}`);
@@ -343,7 +355,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (conversion) {
-    lines.push("## Conversión MVP2", "");
+    lines.push("## Conversión de matrices", "");
     lines.push(`${conversion.source} -> ${conversion.target}: ${formatMatrix(conversion.result)}`);
     lines.push("");
     lines.push(...conversion.conditions.map((condition) => `- ${condition}`));
@@ -351,7 +363,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (association) {
-    lines.push("## Asociación MVP3", "");
+    lines.push("## Asociación de cuadripolos", "");
     lines.push(`${association.label} usando ${association.family}: ${formatMatrix(association.result)}`);
     lines.push("");
     lines.push(...association.steps.map((step) => `- ${step}`));

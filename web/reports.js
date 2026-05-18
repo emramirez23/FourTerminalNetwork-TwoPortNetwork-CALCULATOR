@@ -1,5 +1,5 @@
-import { formatMatrix } from "./matrix.js?v=20260517-acentos-ui";
-import { formatNumber } from "./math-utils.js?v=20260517-acentos-ui";
+import { formatMatrix } from "./matrix.js?v=20260518-builder-topologies";
+import { formatNumber } from "./math-utils.js?v=20260518-builder-topologies";
 
 export function generateReport({ netlist, preview, solution, conversion, association }) {
   const lines = [
@@ -28,7 +28,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (solution) {
-    lines.push("## Resolución MVP1", "");
+    lines.push("## Resolución de parámetros", "");
     lines.push(`Matriz Z: ${formatMatrix(solution.z, "ohm")}`);
     lines.push("");
     lines.push(`Matriz Y: ${formatMatrix(solution.y, "S")}`);
@@ -49,7 +49,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (conversion) {
-    lines.push("## Conversión MVP2", "");
+    lines.push("## Conversión de matrices", "");
     lines.push(`${conversion.source} -> ${conversion.target}: ${formatMatrix(conversion.result)}`);
     lines.push("");
     lines.push(...conversion.conditions.map((condition) => `- ${condition}`));
@@ -57,7 +57,7 @@ export function generateReport({ netlist, preview, solution, conversion, associa
   }
 
   if (association) {
-    lines.push("## Asociación MVP3", "");
+    lines.push("## Asociación de cuadripolos", "");
     lines.push(`${association.label} usando ${association.family}: ${formatMatrix(association.result)}`);
     lines.push("");
     lines.push(...association.steps.map((step) => `- ${step}`));
